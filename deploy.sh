@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 
-npm run build
+quasar build -m pwa
 
 git add .
 
