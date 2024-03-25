@@ -5,7 +5,9 @@
         style="max-width: 100px;"
         src="../assets/delafun__1_-removebg-preview.png"
         alt="logo-delafun">
-      <span style="font-size: 20px;font-weight: 700" class="text-white">Calculator</span>
+      <img
+        style="width: 100%;max-width: 45px;"
+        src="../assets/calculator.png" alt="calc-logo">
     </div>
   </div>
 </template>

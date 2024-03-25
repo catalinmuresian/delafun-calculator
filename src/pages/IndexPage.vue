@@ -3,7 +3,16 @@
     <q-dialog v-model="modalSettings.events.openModal" persistent>
       <q-card style="width: 100%">
         <q-card-section>
-          <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">{{ modalSettings.events.input.length ? `${modalSettings.events.input}`: `#${modalSettings.events.id}`}}</span>
+          <div style="display: flex;width: 100%;justify-content: space-between;align-items: center;">
+            <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">{{ modalSettings.events.input.length ? `${modalSettings.events.input}`: `#${modalSettings.events.id}`}}</span>
+            <q-btn
+              v-close-popup
+              icon="close"
+              dense
+              color="grey"
+              flat>
+            </q-btn>
+          </div>
           <div class="text-h6">Setari eveniment</div>
         </q-card-section>
         <q-card-section class="q-pt-none">
@@ -24,16 +33,25 @@
           </q-select>
         </q-card-section>
 
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Inchide" v-close-popup />
-          <q-btn flat label="Salveaza" @click="handleSaveModalInput(modalSettings.events.id, 'events')" v-close-popup />
+        <q-card-actions align="between" class="text-primary">
+          <q-btn flat label="Sterge" color="negative" no-caps v-close-popup @click="handleDelete(modalSettings.events.id, 'events')" />
+          <q-btn flat label="Salveaza" no-caps @click="handleSaveModalInput(modalSettings.events.id, 'events')" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
     <q-dialog v-model="modalSettings.spendings.openModal" persistent>
       <q-card style="width: 100%">
         <q-card-section>
-          <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">{{ modalSettings.spendings.input.length ? `${modalSettings.spendings.input}`: `#${modalSettings.spendings.id}`}}</span>
+          <div style="display: flex;width: 100%;justify-content: space-between;align-items: center;">
+            <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">{{ modalSettings.spendings.input.length ? `${modalSettings.spendings.input}`: `#${modalSettings.spendings.id}`}}</span>
+            <q-btn
+              v-close-popup
+              icon="close"
+              dense
+              color="grey"
+              flat>
+              </q-btn>
+          </div>
           <div style="font-size: 16px">Setari cheltuiala</div>
         </q-card-section>
 
@@ -50,9 +68,9 @@
           </q-select>
         </q-card-section>
 
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Inchide" v-close-popup />
-          <q-btn flat label="Salveaza" @click="handleSaveModalInput(modalSettings.spendings.id, 'spendings')" v-close-popup />
+        <q-card-actions align="between" class="text-primary">
+          <q-btn flat label="Sterge" no-caps color="negative" v-close-popup @click="handleDelete(modalSettings.spendings.id, 'spendings')"/>
+          <q-btn flat label="Salveaza" no-caps @click="handleSaveModalInput(modalSettings.spendings.id, 'spendings')" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -61,7 +79,7 @@
         <q-item-section>
           <div>
             <h6 style="margin: 0;position: relative;display: inline">Evenimente
-              <q-badge style="right: -20px;font-weight: 500" rounded floating color="positive" :label="data.events?.length" />
+              <q-badge v-if="data.events.length" style="right: -20px;font-weight: 500" rounded floating color="positive" :label="data.events?.length" />
             </h6>
           </div>
         </q-item-section>
@@ -106,7 +124,7 @@
         <q-item-section>
           <div>
             <h6 style="margin: 0;position: relative;display: inline">Cheltuieli
-              <q-badge style="right: -20px;font-weight: 500" rounded floating color="negative" label="1" />
+              <q-badge v-if="data.spendings.length" style="right: -20px;font-weight: 500" rounded floating color="negative" :label="data.spendings?.length" />
             </h6>
           </div>
         </q-item-section>
@@ -206,12 +224,14 @@
 
 <!--      </div>-->
 <!--    </div>-->
-<!--    <q-btn-->
-<!--      style="width: 100%;margin-top: 40px;"-->
-<!--      color="green"-->
-<!--      no-caps-->
-<!--      dense-->
-<!--      @click="calculate()">Calculeaza</q-btn>-->
+    <div style="padding: 0 16px;margin-top: 20px;">
+      <q-btn
+        style="width: 100%;"
+        color="positive"
+        no-caps
+        dense
+        @click="calculate()">Calculeaza</q-btn>
+    </div>
     <div style="padding: 0 16px;">
       <hr style="margin: 16px 0;">
       <div class="flex" style="gap: 10px;align-items: center" >
@@ -279,22 +299,8 @@ const modalSettings = ref({
 })
 const checkboxIfFirma = ref(false)
 const data = ref({
-  events: [
-    {
-      id: 1,
-      value: null,
-      focus: false,
-      name: ''
-    }
-  ],
-  spendings: [
-    {
-      id: 1,
-      value: null,
-      focus: false,
-      name: ''
-    }
-  ]
+  events: [],
+  spendings: []
 })
 const valuta = ref('LEI')
 const optionsValuta = ref(['LEI', 'EURO', 'USD'])
@@ -416,6 +422,10 @@ function handleAdd (section) {
     name: ''
   })
 
+}
+
+function handleDelete (id, section) {
+  data.value[section] = data.value[section].filter(obj => obj.id !== id)
 }
 
 </script>
