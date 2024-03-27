@@ -148,7 +148,7 @@ module.exports = configure(function (ctx) {
         description: `An app calculator`,
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ffffff',
+        background_color: '#5aa5b987',
         theme_color: '#5aa5b987',
         icons: [
           {

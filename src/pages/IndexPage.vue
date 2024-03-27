@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page style="min-height: unset;">
     <q-dialog v-model="confirmReset" persistent>
       <q-card>
         <q-card-section class="row items-center">
