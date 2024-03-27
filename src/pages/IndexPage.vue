@@ -23,7 +23,7 @@
                    @keyup.enter="modalSettings.events.openModal = false" />
         </q-card-section>
 
-        <q-card-section style="display: flex;gap: 5px;">
+        <q-card-section style="display: flex;gap: 5px;align-items: flex-start;">
           <q-checkbox dense color="positive" v-model="checkboxIfFirma" />
           Cheltuieli firma 11%
         </q-card-section>
@@ -100,7 +100,7 @@
           <div style="display: flex;flex-direction: column;gap: 10px;">
             <div
               v-for="{value, id,focus, name, currency} in data.events">
-              <label style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">{{ `Eveniment ${name.length ? `- ${name}` : `#${id}`}`}} <q-icon @click="openModal(id, name, 'events', currency)" size="16px" color="grey"  style="cursor: pointer" name="settings"></q-icon></label>
+              <label style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">{{ `Eveniment ${name.length ? `- ${name}` : `#${id}`}`}} <q-icon @click="openModal(id, name, 'events', currency)" size="20px" color="grey"  style="cursor: pointer" name="settings"></q-icon></label>
               <q-input
                 style="width: 100px"
                 class="input-events-spendings"
@@ -144,7 +144,7 @@
           <div style="display: flex;flex-direction: column;gap: 10px;">
             <div
               v-for="{value, id,focus, name, currency} in data.spendings">
-              <label style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">{{ `Cheltuiala ${name.length ? `- ${name}` : `#${id}`}`}} <q-icon @click="openModal(id, name, 'spendings', currency)" size="16px" color="grey" style="cursor: pointer" name="settings"></q-icon></label>
+              <label style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">{{ `Cheltuiala ${name.length ? `- ${name}` : `#${id}`}`}} <q-icon @click="openModal(id, name, 'spendings', currency)" size="20px" color="grey" style="cursor: pointer" name="settings"></q-icon></label>
               <q-input
                 class="input-events-spendings"
                 style="width: 100px;"
@@ -168,7 +168,7 @@
     <div style="padding: 0 16px;margin-top: 20px;">
       <q-btn
         style="width: 100%;"
-        color="positive"
+        color="info"
         no-caps
         dense
         @click="calculate()">Calculeaza</q-btn>

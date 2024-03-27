@@ -1,6 +1,6 @@
 <template>
   <div class="nav-bar">
-    <div class="flex justify-between items-center" style="padding: 5px 16px;background: #CDDC39">
+    <div class="flex justify-between items-center" style="padding: 5px 16px;background: #5aa5b987">
       <img
         style="max-width: 100px;"
         src="../assets/delafun__1_-removebg-preview.png"
