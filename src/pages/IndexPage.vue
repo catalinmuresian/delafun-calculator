@@ -1,5 +1,25 @@
 <template>
   <q-page>
+    <q-dialog v-model="confirmReset" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Esti sigur ca vrei sa resetezi totul ?</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat
+                 label="Nu"
+                 no-caps
+                 color="grey"
+                 v-close-popup />
+          <q-btn flat
+                 no-caps
+                 @click="resetAll"
+                 label="Da"
+                 color="info"
+                 v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-dialog v-model="modalSettings.events.openModal" persistent>
       <q-card style="width: 100%">
         <q-card-section>
@@ -174,13 +194,19 @@
         </q-card-section>
       </q-card>
     </q-expansion-item>
-    <div style="padding: 0 16px;margin-top: 20px;">
+    <div style="padding: 0 16px;margin-top: 20px;display: flex;align-items: center;gap: 10px">
       <q-btn
         style="width: 100%;"
         color="info"
         no-caps
         dense
         @click="calculate()">Calculeaza</q-btn>
+      <q-btn v-if="calculHasMade"
+             round
+             @click="confirmReset = true"
+             dense
+             color="brown-4"
+             icon="restart_alt" />
     </div>
     <div style="margin-top: 20px;padding: 0 16px;">
       <q-table
@@ -208,7 +234,6 @@
         </template>
       </q-table>
       <q-expansion-item
-        expand-separator
         style="margin-top: 10px;"
         dense
         label="Detaliat"
@@ -273,6 +298,8 @@ import {ref} from "vue";
 const eventsExpansion = ref(false)
 const spendingsExpansion = ref(false)
 
+const confirmReset = ref(false)
+
 const columns = [
   { name: 'name', required: true, label: 'Nume', align: 'left', field: row => row.name, format: val => `${val}`, sortable: true},
   { name: 'euro', align: 'center', label: 'Euro', field: 'euro', format: val => `${val} €`,  sortable: true },
@@ -280,6 +307,16 @@ const columns = [
 ]
 
 const rows = [
+  {
+    name: 'Catalin',
+    euro: 0,
+    lei: 0,
+  },
+  {
+    name: 'Vali',
+    euro: 0,
+    lei: 0,
+  },
   {
     name: 'Ion',
     euro: 0,
@@ -297,16 +334,6 @@ const rows = [
   },
   {
     name: 'Radu',
-    euro: 0,
-    lei: 0,
-  },
-  {
-    name: 'Catalin',
-    euro: 0,
-    lei: 0,
-  },
-  {
-    name: 'Vali',
     euro: 0,
     lei: 0,
   },
@@ -338,27 +365,33 @@ const totalSum = ref({
   totalSumaCheltuieliEuro: 0,
   totalSumaRamasaDupaCheltuieliEuro: 0,
   totalSumaRamasaDupaCatalinSiValiEuro: 0,
-  catalinEuro: 0,
-  valiEuro: 0,
-  ionEuro: 0,
-  raduEuro: 0,
-  sarpeEuro: 0,
-  tonyEuro: 0,
   totalSumaEvenimenteLei: 0,
   totalSumaCheltuieliLei: 0,
   totalSumaRamasaDupaCheltuieliLei: 0,
   totalSumaRamasaDupaCatalinSiValiLei: 0,
-  catalinLei: 0,
-  valiLei: 0,
-  ionLei: 0,
-  raduLei: 0,
-  sarpeLei: 0,
-  tonyLei: 0,
   totalSumaCheltuieliLeiSchimbat: 0,
   totalSumaCheltuieliEuroSchimbat: 0,
 })
 
+const calculHasMade = ref(false)
+function resetAll () {
+  calculHasMade.value = false
+  data.value.events = []
+  data.value.spendings = []
+  const keysTotalSum = Object.keys(totalSum)
+  keysTotalSum.forEach(key => {
+    totalSum[key] = 0
+  })
+  rows.forEach(row => {
+    row.euro = 0
+    row.lei = 0
+  })
+  valuta.value = ''
+  eventsExpansion.value = false
+  spendingsExpansion.value = false
+}
 function calculate () {
+  calculHasMade.value = true
   eventsExpansion.value = false
   spendingsExpansion.value = false
 
@@ -380,7 +413,7 @@ function calculate () {
   }
   data.value.events.forEach(obj => {
     const listPriceKey = obj.currency === 'lei' ? 'lei' : 'euro'
-    listPriceEvents[listPriceKey].push(obj.value * 1)
+    listPriceEvents[listPriceKey].push(obj.companyEvent ? obj.priceWithCompanySpendings : obj.value * 1)
   })
   data.value.spendings.forEach(obj => {
     const listPriceKey = obj.currency === 'lei' ? 'lei' : 'euro'
@@ -479,26 +512,11 @@ function calculate () {
 
   })
 
-
-
-
-  totalSum.value.catalinEuro= catalinEuro
-  totalSum.value.valiEuro = valiEuro
-  totalSum.value.ionEuro = listRestEuro.ion
-  totalSum.value.raduEuro = listRestEuro.radu
-  totalSum.value.sarpeEuro = listRestEuro.sarpe
-  totalSum.value.tonyEuro= listRestEuro.tony
-
   totalSum.value.totalSumaEvenimenteLei = totalPriceEventsLei
   totalSum.value.totalSumaCheltuieliLei = totalPriceSpendingsLei
   totalSum.value.totalSumaRamasaDupaCheltuieliLei = totalSumRemainingLei
   totalSum.value.totalSumaRamasaDupaCatalinSiValiLei = sumAfterCatalinSiValiLei
-  totalSum.value.catalinLei= catalinLei
-  totalSum.value.valiLei = valiLei
-  totalSum.value.ionLei = listRestLei.ion
-  totalSum.value.raduLei = listRestLei.radu
-  totalSum.value.sarpeLei = listRestLei.sarpe
-  totalSum.value.tonyLei= listRestLei.tony
+
 }
 
 function handleNumeEvenimentInput (value) {
