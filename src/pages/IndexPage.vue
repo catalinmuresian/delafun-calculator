@@ -94,7 +94,7 @@
               no-caps
               flat
               @click="handleAdd('events')"
-              color="primary" label="Adauga eveniment" icon="add" />
+              color="info" label="Adauga eveniment" icon="add" />
 
           </div>
           <div style="display: flex;flex-direction: column;gap: 10px;">
@@ -139,7 +139,7 @@
               no-caps
               flat
               @click="handleAdd('spendings')"
-              color="primary" label="Adauga cheltuiala" icon="add" />
+              color="info" label="Adauga cheltuiala" icon="add" />
           </div>
           <div style="display: flex;flex-direction: column;gap: 10px;">
             <div
