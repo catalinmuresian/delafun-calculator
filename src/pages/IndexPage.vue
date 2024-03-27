@@ -84,7 +84,6 @@
           </div>
         </q-item-section>
       </template>
-
       <q-card>
         <q-card-section style="padding-top: 0;">
           <div style="display: flex;justify-content: flex-end">
@@ -95,26 +94,36 @@
               flat
               @click="handleAdd('events')"
               color="info" label="Adauga eveniment" icon="add" />
-
           </div>
           <div style="display: flex;flex-direction: column;gap: 10px;">
             <div
-              v-for="{value, id,focus, name, currency} in data.events">
-              <label style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">{{ `Eveniment ${name.length ? `- ${name}` : `#${id}`}`}} <q-icon @click="openModal(id, name, 'events', currency)" size="20px" color="grey"  style="cursor: pointer" name="settings"></q-icon></label>
-              <q-input
-                style="width: 100px"
-                class="input-events-spendings"
-                dense
-                :suffix="currency"
-                @blur="blurFunc(id, 'events')"
-                @focus="focusButtonFunc(id, 'events')"
-                :outlined="focus"
-                :filled="!focus"
-                type="number"
-                pattern="\d*"
-                @wheel="stopScroll($event)"
-                @update:model-value="newValue => handleInput(id, newValue, 'events')"
-                :model-value="value"/>
+              v-for="{value, id,focus, name, currency, companyEvent, priceWithCompanySpendings} in data.events">
+              <label style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">{{ `Eveniment ${name.length ? `- ${name}` : `#${id}`}`}} <q-icon @click="openModal(id, name, 'events', currency, companyEvent)" size="20px" color="grey"  style="cursor: pointer" name="settings"></q-icon></label>
+              <div style="display: flex;gap: 15px;align-items: center">
+                <div style="display: flex;">
+                  <q-input
+                    style="width: 100px"
+                    class="input-events-spendings"
+                    dense
+                    :suffix="currency"
+                    @blur="blurFunc(id, 'events')"
+                    @focus="focusButtonFunc(id, 'events')"
+                    :outlined="focus"
+                    :filled="!focus"
+                    type="number"
+                    pattern="\d*"
+                    @wheel="stopScroll($event)"
+                    @update:model-value="newValue => handleInput(id, newValue, 'events')"
+                    :model-value="value"/>
+                  <q-icon v-if="companyEvent" size="18px" color="orange" name="info"/>
+                </div>
+                <div
+                  v-if="companyEvent"
+                  style="display: flex;flex-direction: column;justify-content: space-between">
+                  <span style="font-size: 10px;color: grey;font-weight: 500;">- 11% Firma</span>
+                  <span style="font-size: 14px;color: black;font-weight: 500;">{{ `${priceWithCompanySpendings} ${currency}` }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </q-card-section>
@@ -293,7 +302,6 @@ const eventsExpansion = ref(false)
 const spendingsExpansion = ref(false)
 
 const inputModal = ref('')
-const cursEuro = ref(5)
 const modalSettings = ref({
   events: {
     id: null,
@@ -426,8 +434,6 @@ function calculate () {
     listRestLei[key] = sumAfterCatalinSiValiLei / 4
   })
 
-
-
   totalSum.value.totalSumaEvenimenteEuro = totalPriceEventsEuro
   totalSum.value.totalSumaCheltuieliEuro = totalPriceSpendingsEuro
   totalSum.value.totalSumaRamasaDupaCheltuieliEuro = totalSumRemainingEuro
@@ -459,7 +465,8 @@ function handleNumeSpendingInput (value) {
   inputModal.value = value
 }
 
-function openModal (id, name, section, currency) {
+function openModal (id, name, section, currency, companyEvent) {
+  checkboxIfFirma.value = companyEvent ? companyEvent : false
   modalSettings.value[section].id = id
   modalSettings.value[section].openModal = true
   inputModal.value = name
@@ -467,22 +474,23 @@ function openModal (id, name, section, currency) {
   valuta.value = currency
 }
 
-
-
-
-
-
 function handleSaveModalInput (id, section, valuta) {
   data.value[section].forEach(obj => {
     if (obj.id === modalSettings.value[section].id) {
       obj.name = inputModal.value
       obj.currency = valuta
+      if (section === 'events') {
+        obj.companyEvent = checkboxIfFirma.value
+        obj.priceWithCompanySpendings = applyCompanySpendings(obj.value)
+      }
     }
   })
   inputModal.value = ''
 }
 
-
+function applyCompanySpendings (value) {
+  return (value - (value * 0.11))
+}
 
 function focusButtonFunc (id, section) {
   data.value[section].forEach(obj => {
@@ -493,6 +501,7 @@ function focusButtonFunc (id, section) {
 function blurFunc (id, section) {
   data.value[section].forEach(obj => {
     obj.id === id && (obj.focus = false)
+    obj.companyEvent && (obj.priceWithCompanySpendings = applyCompanySpendings(obj.value))
   })
 }
 
