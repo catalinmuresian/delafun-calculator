@@ -182,115 +182,87 @@
         dense
         @click="calculate()">Calculeaza</q-btn>
     </div>
-    <div style="padding: 0 16px;">
-      <hr style="margin: 16px 0;">
-      <div class="flex" style="gap: 10px;align-items: center" >
-        <div class="cont">
-          <label class="label">Total suma evenimente</label>
-          <span>{{ totalSum.totalSumaEvenimenteEuro }} euro</span>
-        </div>
-        -
-        <div class="cont">
-          <label class="label">Total suma cheltuieli</label>
-          <span :style="totalSum.totalSumaCheltuieliEuroSchimbat > 1 && 'text-decoration: line-through;'">{{ totalSum.totalSumaCheltuieliEuro }} euro</span>
-        </div>
-        <span v-if="totalSum.totalSumaCheltuieliLeiSchimbat > 1">-</span>
-        <div
-          v-if="totalSum.totalSumaCheltuieliLeiSchimbat > 1"
-          class="cont">
-          <label class="label">Total suma cheltuieli lei schimbat</label>
-          <span>{{ totalSum.totalSumaCheltuieliLeiSchimbat }} euro</span>
-        </div>
-        =
-        <div class="cont">
-          <label class="label">Total suma ramasa</label>
-          <span>{{ totalSum.totalSumaRamasaDupaCheltuieliEuro }} euro</span>
-        </div>
-      </div>
-      <div class="flex" style="gap: 10px;align-items: center;margin-top: 20px">
-        <div class="cont">
-          <label class="label">Total suma evenimente lei</label>
-          <span>{{ totalSum.totalSumaEvenimenteLei }} lei</span>
-        </div>
-        -
-        <div class="cont">
-          <label class="label">Total suma cheltuieli lei</label>
-          <span :style="totalSum.totalSumaCheltuieliLeiSchimbat > 1 && 'text-decoration: line-through;'">{{ totalSum.totalSumaCheltuieliLei }} lei</span>
-        </div>
-        <span v-if="totalSum.totalSumaCheltuieliEuroSchimbat > 1">-</span>
-        <div class="cont"
-             v-if="totalSum.totalSumaCheltuieliEuroSchimbat > 1">
-          <label class="label">Total suma cheltuieli euro schimbat</label>
-          <span>{{ totalSum.totalSumaCheltuieliEuroSchimbat }} lei</span>
-        </div>
-        =
-        <div class="cont">
-          <label class="label">Total suma ramasa lei</label>
-          <span>{{ totalSum.totalSumaRamasaDupaCheltuieliLei }} lei</span>
-        </div>
-      </div>
-
-      <div class="flex" style="flex-direction: column;gap: 10px;justify-content: flex-start;margin-top: 20px;">
-        <div class="flex" style="gap: 10px;">
-          <label>Catalin -</label>
-          <div style="display: flex">
-            <span>{{ totalSum.catalinEuro }} euro</span>
-            <div style="margin-left: 4px;">+
-              <span>{{ totalSum.catalinLei }} lei</span>
-          </div>
-          </div>
-        </div>
-        <div class="flex" style="gap: 10px">
-          <label>Vali -</label>
-          <div style="display: flex">
-            <span>{{ totalSum.valiEuro }} euro</span>
-            <div style="margin-left: 4px;">+
-              <span>{{ totalSum.valiLei }} lei</span>
+    <div style="margin-top: 20px;padding: 0 16px;">
+      <q-table
+        flat
+        hide-header
+        hide-bottom
+        bordered
+        :rows="rows"
+        :columns="columns"
+        :pagination="{ rowsPerPage: 0 }"
+        row-key="name"
+        separator="cell">
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="name" :props="props">
+              {{ props.row.name }}
+            </q-td>
+            <q-td key="euro" :props="props">
+              {{ `${props.row.euro} €`  }}
+            </q-td>
+            <q-td key="lei" :props="props">
+              {{ `${props.row.lei} lei` }}
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+      <q-expansion-item
+        expand-separator
+        style="margin-top: 10px;"
+        dense
+        label="Detaliat"
+      >
+        <q-card>
+          <q-card-section>
+            <div class="flex" style="gap: 10px;align-items: center" >
+              <div class="cont">
+                <label class="label">Total suma evenimente</label>
+                <span>{{ totalSum.totalSumaEvenimenteEuro }} euro</span>
+              </div>
+              -
+              <div class="cont">
+                <label class="label">Total suma cheltuieli</label>
+                <span :style="totalSum.totalSumaCheltuieliEuroSchimbat > 1 && 'text-decoration: line-through;'">{{ totalSum.totalSumaCheltuieliEuro }} euro</span>
+              </div>
+              <span v-if="totalSum.totalSumaCheltuieliLeiSchimbat > 1">-</span>
+              <div
+                v-if="totalSum.totalSumaCheltuieliLeiSchimbat > 1"
+                class="cont">
+                <label class="label">Total suma cheltuieli lei schimbat</label>
+                <span>{{ totalSum.totalSumaCheltuieliLeiSchimbat }} euro</span>
+              </div>
+              =
+              <div class="cont">
+                <label class="label">Total suma ramasa</label>
+                <span>{{ totalSum.totalSumaRamasaDupaCheltuieliEuro }} euro</span>
+              </div>
             </div>
-          </div>
-
-        </div>
-        <div class="flex" style="gap: 10px">
-          <label>Ion -</label>
-          <div style="display: flex">
-            <span>{{ totalSum.ionEuro }} euro</span>
-            <div style="margin-left: 4px;">+
-              <span>{{ totalSum.ionLei }} lei</span>
+            <div class="flex" style="gap: 10px;align-items: center;margin-top: 20px">
+              <div class="cont">
+                <label class="label">Total suma evenimente lei</label>
+                <span>{{ totalSum.totalSumaEvenimenteLei }} lei</span>
+              </div>
+              -
+              <div class="cont">
+                <label class="label">Total suma cheltuieli lei</label>
+                <span :style="totalSum.totalSumaCheltuieliLeiSchimbat > 1 && 'text-decoration: line-through;'">{{ totalSum.totalSumaCheltuieliLei }} lei</span>
+              </div>
+              <span v-if="totalSum.totalSumaCheltuieliEuroSchimbat > 1">-</span>
+              <div class="cont"
+                   v-if="totalSum.totalSumaCheltuieliEuroSchimbat > 1">
+                <label class="label">Total suma cheltuieli euro schimbat</label>
+                <span>{{ totalSum.totalSumaCheltuieliEuroSchimbat }} lei</span>
+              </div>
+              =
+              <div class="cont">
+                <label class="label">Total suma ramasa lei</label>
+                <span>{{ totalSum.totalSumaRamasaDupaCheltuieliLei }} lei</span>
+              </div>
             </div>
-          </div>
-
-        </div>
-        <div class="flex" style="gap: 10px">
-          <label>Radu -</label>
-          <div style="display: flex">
-            <span>{{ totalSum.raduEuro }} euro</span>
-            <div style="margin-left: 4px;">+
-              <span>{{ totalSum.raduLei }} lei</span>
-            </div>
-          </div>
-
-        </div>
-        <div class="flex" style="gap: 10px">
-          <label>Sarpe -</label>
-          <div style="display: flex">
-            <span>{{ totalSum.sarpeEuro }} euro</span>
-            <div style="margin-left: 4px;">+
-              <span>{{ totalSum.sarpeLei }} lei</span>
-            </div>
-          </div>
-
-        </div>
-        <div class="flex" style="gap: 10px">
-          <label>Tony -</label>
-          <div style="display: flex">
-            <span>{{ totalSum.tonyEuro }} euro</span>
-            <div style="margin-left: 4px;">+
-              <span>{{ totalSum.tonyLei }} lei</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
     </div>
   </q-page>
 </template>
@@ -300,6 +272,45 @@ import {ref} from "vue";
 
 const eventsExpansion = ref(false)
 const spendingsExpansion = ref(false)
+
+const columns = [
+  { name: 'name', required: true, label: 'Nume', align: 'left', field: row => row.name, format: val => `${val}`, sortable: true},
+  { name: 'euro', align: 'center', label: 'Euro', field: 'euro', format: val => `${val} €`,  sortable: true },
+  { name: 'lei', label: 'Lei', field: 'lei', format: val => `${val} lei`, sortable: true },
+]
+
+const rows = [
+  {
+    name: 'Ion',
+    euro: 0,
+    lei: 0,
+  },
+  {
+    name: 'Sarpe',
+    euro: 0,
+    lei: 0,
+  },
+  {
+    name: 'Tony',
+    euro: 0,
+    lei: 0,
+  },
+  {
+    name: 'Radu',
+    euro: 0,
+    lei: 0,
+  },
+  {
+    name: 'Catalin',
+    euro: 0,
+    lei: 0,
+  },
+  {
+    name: 'Vali',
+    euro: 0,
+    lei: 0,
+  },
+]
 
 const inputModal = ref('')
 const modalSettings = ref({
@@ -438,6 +449,39 @@ function calculate () {
   totalSum.value.totalSumaCheltuieliEuro = totalPriceSpendingsEuro
   totalSum.value.totalSumaRamasaDupaCheltuieliEuro = totalSumRemainingEuro
   totalSum.value.totalSumaRamasaDupaCatalinSiValiEuro = sumAfterCatalinSiValiEuro
+
+
+  rows.forEach(obj => {
+    if (obj.name === 'Catalin') {
+      obj.euro = Math.floor(catalinEuro)
+      obj.lei = Math.floor(catalinLei)
+    }
+    if (obj.name === 'Vali') {
+      obj.euro = Math.floor(valiEuro)
+      obj.lei = Math.floor(valiLei)
+    }
+    if (obj.name === 'Ion') {
+      obj.euro = Math.floor(listRestEuro.ion)
+      obj.lei = Math.floor(listRestLei.ion)
+    }
+    if (obj.name === 'Radu') {
+      obj.euro = Math.floor(listRestEuro.radu)
+      obj.lei = Math.floor(listRestLei.radu)
+    }
+    if (obj.name === 'Sarpe') {
+      obj.euro = Math.floor(listRestEuro.sarpe)
+      obj.lei = Math.floor(listRestLei.sarpe)
+    }
+    if (obj.name === 'Tony') {
+      obj.euro = Math.floor(listRestEuro.tony)
+      obj.lei = Math.floor(listRestLei.tony)
+    }
+
+  })
+
+
+
+
   totalSum.value.catalinEuro= catalinEuro
   totalSum.value.valiEuro = valiEuro
   totalSum.value.ionEuro = listRestEuro.ion
