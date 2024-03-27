@@ -200,6 +200,7 @@
         color="info"
         no-caps
         dense
+        :disabled="noEvents()"
         @click="calculate()">Calculeaza</q-btn>
       <q-btn v-if="calculHasMade"
              round
@@ -374,6 +375,10 @@ const totalSum = ref({
 })
 
 const calculHasMade = ref(false)
+
+function noEvents () {
+  return data.value.events.length < 1
+}
 function resetAll () {
   calculHasMade.value = false
   data.value.events = []

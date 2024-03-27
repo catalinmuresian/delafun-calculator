@@ -143,8 +143,8 @@ module.exports = configure(function (ctx) {
 
 
       manifest: {
-        name: `delafun-calculator`,
-        short_name: `delafun-calculator`,
+        name: `deLaFun - Calculator`,
+        short_name: `deLaFun-Calc`,
         description: `An app calculator`,
         display: 'standalone',
         orientation: 'portrait',
