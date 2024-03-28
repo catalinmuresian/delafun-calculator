@@ -149,15 +149,29 @@ module.exports = configure(function (ctx) {
         orientation: 'portrait',
         background_color: '#ACD0DB',
         theme_color: '#ACD0DB',
+        screenshots: [
+          {
+            "src": "screenshot-mobile.png",
+            "sizes": "498x497",
+            "type": "image/png"
+          },
+          {
+            "src": "screenshot-desktop.png",
+            "sizes": "498x497",
+            "type": "image/png"
+          },
+          {
+            "src": "screenshot-wide.png",
+            "sizes": "498x497",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Application"
+          }
+        ],
         icons: [
           {
             "src": "android-chrome-192x192.png",
             "sizes": "192x192",
-            "type": "image/png"
-          },
-          {
-            "src": "android-chrome-384x384.png",
-            "sizes": "384x384",
             "type": "image/png"
           }
         ],
