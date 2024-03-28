@@ -1,5 +1,47 @@
 <template>
   <q-page style="min-height: unset;">
+    <q-dialog v-model="confirmDeleteEvent" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Esti sigur ca vrei sa stergi acest event ?</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat
+                 label="Nu"
+                 no-caps
+                 color="grey"
+                 v-close-popup />
+          <q-btn flat
+                 no-caps
+                 @click="handleDelete(modalSettings.events.id, 'events')"
+                 label="Da"
+                 color="info"
+                 v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="confirmDeleteSpending" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Esti sigur ca vrei sa stergi aceasta cheltuiala ?</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat
+                 label="Nu"
+                 no-caps
+                 color="grey"
+                 v-close-popup />
+          <q-btn flat
+                 no-caps
+                 @click="handleDelete(modalSettings.spendings.id, 'spendings')"
+                 label="Da"
+                 color="info"
+                 v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+
     <q-dialog v-model="confirmReset" persistent>
       <q-card>
         <q-card-section class="row items-center">
@@ -56,7 +98,11 @@
         </q-card-section>
 
         <q-card-actions align="between" class="text-primary">
-          <q-btn flat label="Sterge" color="negative" no-caps v-close-popup @click="handleDelete(modalSettings.events.id, 'events')" />
+          <q-btn flat
+                 label="Sterge"
+                 color="negative"
+                 no-caps
+                 @click="confirmDeleteEvent = true" />
           <q-btn flat label="Salveaza" no-caps @click="handleSaveModalInput(modalSettings.events.id, 'events', valuta)" v-close-popup />
         </q-card-actions>
       </q-card>
@@ -95,7 +141,11 @@
         </q-card-section>
 
         <q-card-actions align="between" class="text-primary">
-          <q-btn flat label="Sterge" no-caps color="negative" v-close-popup @click="handleDelete(modalSettings.spendings.id, 'spendings')"/>
+          <q-btn flat
+                 label="Sterge"
+                 no-caps
+                 color="negative"
+                 @click="confirmDeleteSpending = true"/>
           <q-btn flat label="Salveaza" no-caps @click="handleSaveModalInput(modalSettings.spendings.id, 'spendings', valuta)" v-close-popup />
         </q-card-actions>
       </q-card>
@@ -306,6 +356,9 @@ import {ref} from "vue";
 
 const eventsExpansion = ref(false)
 const spendingsExpansion = ref(false)
+
+const confirmDeleteEvent = ref(false)
+const confirmDeleteSpending = ref(false)
 
 const getResultsCalcul = ref(false)
 
@@ -607,6 +660,10 @@ function handleAdd (section) {
 
 function handleDelete (id, section) {
   data.value[section] = data.value[section].filter(obj => obj.id !== id)
+  confirmDeleteEvent.value = false
+  confirmDeleteSpending.value = false
+  modalSettings.value.events.openModal = false
+  modalSettings.value.spendings.openModal = false
 }
 
 </script>

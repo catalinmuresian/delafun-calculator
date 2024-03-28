@@ -141,7 +141,6 @@ module.exports = configure(function (ctx) {
 
       chainWebpackCustomSW (/* chain */) {},
 
-
       manifest: {
         name: `deLaFun - Calculator`,
         short_name: `deLaFun-Calc`,
