@@ -209,7 +209,9 @@
              color="brown-4"
              icon="restart_alt" />
     </div>
-    <div style="margin-top: 20px;padding: 0 16px;">
+    <div
+      v-if="getResultsCalcul"
+      style="margin-top: 20px;padding: 0 16px;">
       <q-table
         flat
         hide-header
@@ -299,6 +301,8 @@ import {ref} from "vue";
 const eventsExpansion = ref(false)
 const spendingsExpansion = ref(false)
 
+const getResultsCalcul = ref(false)
+
 const confirmReset = ref(false)
 
 const columns = [
@@ -381,9 +385,10 @@ function noEvents () {
 }
 function resetAll () {
   calculHasMade.value = false
+  getResultsCalcul.value = false
   data.value.events = []
   data.value.spendings = []
-  const keysTotalSum = Object.keys(totalSum)
+  const keysTotalSum = Object.keys(totalSum.value)
   keysTotalSum.forEach(key => {
     totalSum[key] = 0
   })
@@ -396,6 +401,7 @@ function resetAll () {
   spendingsExpansion.value = false
 }
 function calculate () {
+  getResultsCalcul.value = true
   calculHasMade.value = true
   eventsExpansion.value = false
   spendingsExpansion.value = false

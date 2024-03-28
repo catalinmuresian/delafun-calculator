@@ -148,8 +148,8 @@ module.exports = configure(function (ctx) {
         description: `An app calculator`,
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#5aa5b987',
-        theme_color: '#5aa5b987',
+        background_color: 'rgba(185,90,90,0.53)',
+        theme_color: 'rgba(185,90,90,0.53)',
         icons: [
           {
             "src": "/android-chrome-192x192.png",
