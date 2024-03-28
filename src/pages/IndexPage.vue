@@ -49,7 +49,9 @@
         </q-card-section>
         <q-card-section>
           <span style="margin-bottom: 6px;display: block;">Selecteaza moneda</span>
-          <q-select class="currency-select" style="width: 100%;max-width: 75px;" outlined v-model="valuta" dense :options="optionsValuta">
+          <q-select class="currency-select"
+                    behavior="menu"
+                    style="width: 100%;max-width: 75px;" outlined v-model="valuta" dense :options="optionsValuta">
           </q-select>
         </q-card-section>
 
@@ -84,7 +86,11 @@
         </q-card-section>
         <q-card-section>
           <span style="margin-bottom: 6px;display: block;">Selecteaza moneda</span>
-          <q-select  style="width: 100%;max-width: 85px;" outlined v-model="valuta" dense :options="optionsValuta">
+          <q-select  style="width: 100%;max-width: 85px;"
+                     outlined
+                     behavior="menu"
+                     v-model="valuta"
+                     dense :options="optionsValuta">
           </q-select>
         </q-card-section>
 
