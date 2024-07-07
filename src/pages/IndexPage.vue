@@ -388,13 +388,15 @@
               <span>
                 {{ props.row.name }}
               </span>
-              <span v-if="props.row.avansPerMember"
-                    style="color: grey;font-size: 10px;display: flex;align-items: center;gap: 3px">
+              <div v-if="props.row.totalAvans"
+                   style="color: grey;font-size: 10px;display: flex;align-items: center;gap: 3px">
+
                 <q-icon size="18px"
                         color="green"
                         name="info"/>
-                {{ `Avans ${props.row.avansPerMember}${props.row.valutaAvans}` }}
-              </span>
+                {{ `${props.row.totalAvans} €` }}
+
+              </div>
             </q-td>
             <q-td key="euro" :props="props">
               {{ `${props.row.euro} €`  }}
@@ -493,31 +495,37 @@ const rows = [
     name: 'Catalin',
     euro: 0,
     lei: 0,
+    totalAvans: null
   },
   {
     name: 'Vali',
     euro: 0,
     lei: 0,
+    totalAvans: null
   },
   {
     name: 'Ion',
     euro: 0,
     lei: 0,
+    totalAvans: null
   },
   {
     name: 'Sarpe',
     euro: 0,
     lei: 0,
+    totalAvans: null
   },
   {
     name: 'Tony',
     euro: 0,
     lei: 0,
+    totalAvans: null
   },
   {
     name: 'Radu',
     euro: 0,
     lei: 0,
+    totalAvans: null
   },
 ]
 
@@ -696,7 +704,6 @@ function calculate () {
       obj.euro = Math.floor(listRestEuro.tony)
       obj.lei = Math.floor(listRestLei.tony)
     }
-
   })
 
   totalSum.value.totalSumaEvenimenteLei = totalPriceEventsLei
@@ -704,18 +711,26 @@ function calculate () {
   totalSum.value.totalSumaRamasaDupaCheltuieliLei = totalSumRemainingLei
   totalSum.value.totalSumaRamasaDupaCatalinSiValiLei = sumAfterCatalinSiValiLei
 
+  const listAvans = {
+    Catalin: [],
+    Vali: [],
+    Ion: [],
+    Radu: [],
+    Sarpe: [],
+    Tony: []
+  }
   data.value.events.forEach(obj => {
     if (obj.ifAvans) {
       const valutaAvans = obj.valutaAvans === '€' ? 'euro' : 'lei'
       const valutaOpusa = obj.valutaAvans === '€' ? 'lei' : 'euro'
       const avansPerMember = (obj.pretAvans / obj.avansMembrii.length).toFixed(0)
+
       rows.forEach(o => {
         if (obj.avansMembrii.includes(o.name)) {
           if (o[valutaAvans] > avansPerMember) {
             o[valutaAvans] = o[valutaAvans] - avansPerMember
           }
           else {
-            console.log()
             o[valutaOpusa] =
               o[valutaOpusa] - (valutaAvans === 'euro'
                 ? ((avansPerMember - o[valutaAvans]) * 5)
@@ -723,13 +738,15 @@ function calculate () {
 
             o[valutaAvans] = o[valutaAvans] - (avansPerMember - (avansPerMember - o[valutaAvans]))
           }
-          o.avansPerMember = avansPerMember
-          o.valutaAvans = obj.valutaAvans
+          listAvans[o.name].push(valutaAvans === 'euro' ? avansPerMember * 1 : ((avansPerMember * 1) / 5))
         }
       })
     }
   })
 
+  rows.forEach(row => {
+    row.totalAvans = listAvans[row.name].reduce((partialSum, a) => partialSum + a, 0);
+  })
 }
 
 function handleNumeEvenimentInput (value) {
