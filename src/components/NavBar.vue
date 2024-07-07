@@ -14,10 +14,12 @@
         src="../assets/delafun__1_-removebg-preview.png"
         alt="logo-delafun">
       <div class="logo-info flex justify-center items-center" style="gap: 10px">
-        <q-btn round flat
-               @click="modalInfo = !modalInfo">
-          <q-icon size="25px" name="info" color="white"/>
-        </q-btn>
+        <q-icon class="cursor-pointer"
+                @click="modalInfo = !modalInfo"
+                size="25px"
+                name="info"
+                color="white"/>
+
         <img
           style="width: 100%;max-width: 45px;"
           src="../assets/calculator.png"

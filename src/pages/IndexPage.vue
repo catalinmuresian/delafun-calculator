@@ -41,7 +41,6 @@
       </q-card>
     </q-dialog>
 
-
     <q-dialog v-model="confirmReset" persistent>
       <q-card>
         <q-card-section class="row items-center">
@@ -62,11 +61,16 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
     <q-dialog v-model="modalSettings.events.openModal" persistent>
       <q-card style="width: 100%">
         <q-card-section>
           <div style="display: flex;width: 100%;justify-content: space-between;align-items: center;">
-            <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">{{ modalSettings.events.input.length ? `${modalSettings.events.input}`: `#${modalSettings.events.index}`}}</span>
+            <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">
+              {{ modalSettings.events.input.length
+                ? `${modalSettings.events.input}`
+                : `#${modalSettings.events.index + 1}`}}
+            </span>
             <q-btn
               v-close-popup
               icon="close"
@@ -80,38 +84,93 @@
         <q-card-section class="q-pt-none">
           <span>Nume</span>
           <q-input dense
+                   autofocus
                    v-model="inputModal"
                    @update:model-value="newValue => handleNumeEvenimentInput(newValue)"
                    @keyup.enter="modalSettings.events.openModal = false" />
         </q-card-section>
-
         <q-card-section style="display: flex;gap: 5px;align-items: flex-start;">
-          <q-checkbox dense color="positive" v-model="checkboxIfFirma" />
+          <q-checkbox dense color="orange"
+                      v-model="checkboxIfFirma" />
           Cheltuieli firma 11%
+        </q-card-section>
+        <q-card-section style="display: flex;gap: 5px;align-items: flex-start;flex-direction: column">
+          <div style="display: flex;align-items: flex-start;gap: 5px">
+            <q-checkbox dense color="positive"
+                        v-model="checkboxIfAvans" />
+            Avans
+          </div>
+          <div
+            v-show="checkboxIfAvans"
+            style="display: flex;gap: 10px;margin-top: 5px;">
+            <q-input
+              class="input-avans"
+              placeholder="Pret avans"
+              style="width: 110px"
+              :class="priceAvans ? 'input-price-right' : 'input-price-left'"
+              dense
+              outlined
+              type="number"
+              pattern="\d*"
+              @wheel="stopScroll($event)"
+              v-model="priceAvans"/>
+            <q-select class="currency-select"
+                      behavior="menu"
+                      style="width: 100%;max-width: 75px;"
+                      outlined
+                      v-model="currencyAvans"
+                      dense
+                      :options="optionsValuta">
+            </q-select>
+          </div>
+
+          <q-select
+            style="min-width: 200px;"
+            v-show="checkboxIfAvans"
+            outlined
+            behavior="menu"
+            dense
+            v-model="modelMultiple"
+            multiple
+            :options="optionsAvans"
+            use-chips
+            label="Selecteaza membrii"
+          />
         </q-card-section>
         <q-card-section>
           <span style="margin-bottom: 6px;display: block;">Selecteaza moneda</span>
           <q-select class="currency-select"
                     behavior="menu"
-                    style="width: 100%;max-width: 75px;" outlined v-model="valuta" dense :options="optionsValuta">
+                    style="width: 100%;max-width: 75px;"
+                    outlined
+                    v-model="valuta"
+                    dense
+                    :options="optionsValuta">
           </q-select>
         </q-card-section>
 
-        <q-card-actions align="between" class="text-primary">
+        <q-card-actions align="between"
+                        class="text-primary">
           <q-btn flat
                  label="Sterge"
                  color="negative"
                  no-caps
                  @click="confirmDeleteEvent = true" />
-          <q-btn flat label="Salveaza" no-caps @click="handleSaveModalInput(modalSettings.events.index, 'events', valuta)" v-close-popup />
+          <q-btn flat label="Salveaza"
+                 no-caps
+                 type="submit"
+                 @click="handleSaveModalInput(modalSettings.events.index, 'events', valuta)"
+                 v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+
     <q-dialog v-model="modalSettings.spendings.openModal" persistent>
       <q-card style="width: 100%">
         <q-card-section>
           <div style="display: flex;width: 100%;justify-content: space-between;align-items: center;">
-            <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">{{ modalSettings.spendings.input.length ? `${modalSettings.spendings.input}`: `#${modalSettings.spendings.index}`}}</span>
+            <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">{{ modalSettings.spendings.input.length ? `${modalSettings.spendings.input}`: `#${modalSettings.spendings.index + 1}`}}</span>
             <q-btn
               v-close-popup
               icon="close"
@@ -126,6 +185,7 @@
         <q-card-section class="q-pt-none">
           <span>Nume</span>
           <q-input dense
+                   autofocus
                    v-model="inputModal"
                    @update:model-value="newValue => handleNumeSpendingInput(newValue)"
                    @keyup.enter="modalSettings.spendings.openModal = false" />
@@ -150,7 +210,8 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-expansion-item v-model="eventsExpansion">
+    <q-expansion-item
+      v-model="eventsExpansion">
       <template v-slot:header>
         <q-item-section>
           <div>
@@ -159,7 +220,8 @@
                        style="right: -20px;font-weight: 500"
                        rounded
                        floating
-                       color="positive" :label="data.events?.length" />
+                       color="positive"
+                       :label="data.events?.length" />
             </h6>
           </div>
         </q-item-section>
@@ -177,12 +239,12 @@
           </div>
           <div style="display: flex;flex-direction: column;gap: 10px;">
             <div
-              v-for="({value,focus, name, currency, companyEvent, priceWithCompanySpendings}, index) in data.events">
+              v-for="({value,focus, name, currency, companyEvent, priceWithCompanySpendings, ifAvans, avansMembrii, pretAvans, valutaAvans}, index) in data.events">
               <label
                 style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">
                 {{ `Eveniment ${name.length ? `- ${name}` : `#${index + 1}`}`}} <q-icon
-                @click="openModal(index, name, 'events', currency, companyEvent)"
-                size="20px"
+                @click="openModal(index, name, 'events', currency, companyEvent, ifAvans, avansMembrii, pretAvans, valutaAvans)"
+                size="22px"
                 color="grey"
                 style="cursor: pointer" name="settings"/>
               </label>
@@ -202,13 +264,29 @@
                     @wheel="stopScroll($event)"
                     @update:model-value="newValue => handleInput(index, newValue, 'events')"
                     :model-value="value"/>
-                  <q-icon v-if="companyEvent" size="18px" color="orange" name="info"/>
                 </div>
-                <div
-                  v-if="companyEvent"
-                  style="display: flex;flex-direction: column;justify-content: space-between">
-                  <span style="font-size: 10px;color: grey;font-weight: 500;">- 11% Firma</span>
-                  <span style="font-size: 14px;color: black;font-weight: 500;">{{ `${priceWithCompanySpendings} ${currency}` }}</span>
+                <div v-if="companyEvent"
+                      style="display: flex;align-items: flex-start;gap: 3px;">
+                  <q-icon size="18px"
+                          color="orange"
+                          name="info"/>
+                  <div style="display: flex;flex-direction: column;padding-top: 1px">
+                    <span style="font-size: 10px;color: grey;font-weight: 500;">- 11% Firma</span>
+                    <span style="font-size: 14px;color: black;font-weight: 500;">{{ `${priceWithCompanySpendings} ${currency}` }}</span>
+                  </div>
+                </div>
+                <div v-if="ifAvans"
+                      style="display: flex;align-items: flex-start;gap: 3px;">
+                  <q-icon size="18px"
+                          color="green"
+                          name="info"/>
+                  <div style="display: flex;flex-direction: column;padding-top: 1px">
+                    <span style="font-size: 10px;color: grey;font-weight: 500;">{{ `Avans - ${pretAvans}${currencyAvans}`}}</span>
+                    <div style="font-size: 14px;color: black;font-weight: 500;display: flex;gap: 5px;flex-wrap: wrap;">
+                      <span v-for="(membru, index) in avansMembrii">{{ `${membru}${index + 1 !== avansMembrii.length ? ',' : ''}` }}
+                        </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -216,7 +294,8 @@
         </q-card-section>
       </q-card>
     </q-expansion-item>
-    <q-expansion-item v-model="spendingsExpansion">
+    <q-expansion-item
+      v-model="spendingsExpansion">
       <template v-slot:header>
         <q-item-section>
           <div>
@@ -243,9 +322,13 @@
             <div
               v-for="({value,focus, name, currency}, index) in data.spendings">
               <label style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">{{ `Cheltuiala ${name.length ? `- ${name}` : `#${index + 1}`}`}}
-                <q-icon @click="openModal(index, name, 'spendings', currency)"
-                        size="20px" color="grey" style="cursor: pointer"
-                        name="settings"></q-icon></label>
+                <q-icon
+                  @click="openModal(index, name, 'spendings', currency)"
+                  size="22px"
+                  color="grey"
+                  style="cursor: pointer"
+                  name="settings"/>
+              </label>
               <q-input
                 class="input-events-spendings"
                 style="width: 100px;"
@@ -296,8 +379,22 @@
         separator="cell">
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="name" :props="props">
-              {{ props.row.name }}
+            <q-td key="name"
+                  style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;"
+                  :props="props">
+              <span>
+                {{ props.row.name }}
+              </span>
+              <span v-if="props.row.avansPerMember"
+                    style="color: grey;font-size: 10px;display: flex;align-items: center;gap: 3px">
+                <q-icon size="18px"
+                        color="green"
+                        name="info"/>
+                {{ `Avans ${props.row.avansPerMember}${props.row.valutaAvans}` }}
+              </span>
             </q-td>
             <q-td key="euro" :props="props">
               {{ `${props.row.euro} €`  }}
@@ -370,11 +467,16 @@
 <script setup>
 import {ref} from "vue";
 
-const eventsExpansion = ref(false)
-const spendingsExpansion = ref(false)
+const eventsExpansion = ref(true)
+const spendingsExpansion = ref(true)
 
 const confirmDeleteEvent = ref(false)
 const confirmDeleteSpending = ref(false)
+
+const modelMultiple = ref([])
+const optionsAvans = ref(['Ion', 'Radu', 'Sarpe', 'Tony', 'Catalin', 'Vali'])
+const priceAvans = ref(null)
+const currencyAvans = ref('€')
 
 const getResultsCalcul = ref(false)
 
@@ -433,6 +535,7 @@ const modalSettings = ref({
   }
 })
 const checkboxIfFirma = ref(false)
+const checkboxIfAvans = ref(false)
 const data = ref({
   events: [],
   spendings: []
@@ -513,7 +616,6 @@ function calculate () {
   let totalSumRemainingEuro = totalPriceEventsEuro
   let totalSumRemainingLei = totalPriceEventsLei
 
-
   if (totalPriceEventsLei > totalPriceSpendingsLei) {
     totalSumRemainingLei = totalPriceEventsLei - totalPriceSpendingsLei
   }
@@ -569,7 +671,6 @@ function calculate () {
   totalSum.value.totalSumaRamasaDupaCheltuieliEuro = totalSumRemainingEuro
   totalSum.value.totalSumaRamasaDupaCatalinSiValiEuro = sumAfterCatalinSiValiEuro
 
-
   rows.forEach(obj => {
     if (obj.name === 'Catalin') {
       obj.euro = Math.floor(catalinEuro)
@@ -603,6 +704,32 @@ function calculate () {
   totalSum.value.totalSumaRamasaDupaCheltuieliLei = totalSumRemainingLei
   totalSum.value.totalSumaRamasaDupaCatalinSiValiLei = sumAfterCatalinSiValiLei
 
+  data.value.events.forEach(obj => {
+    if (obj.ifAvans) {
+      const valutaAvans = obj.valutaAvans === '€' ? 'euro' : 'lei'
+      const valutaOpusa = obj.valutaAvans === '€' ? 'lei' : 'euro'
+      const avansPerMember = (obj.pretAvans / obj.avansMembrii.length).toFixed(0)
+      rows.forEach(o => {
+        if (obj.avansMembrii.includes(o.name)) {
+          if (o[valutaAvans] > avansPerMember) {
+            o[valutaAvans] = o[valutaAvans] - avansPerMember
+          }
+          else {
+            console.log()
+            o[valutaOpusa] =
+              o[valutaOpusa] - (valutaAvans === 'euro'
+                ? ((avansPerMember - o[valutaAvans]) * 5)
+                : (avansPerMember - o[valutaAvans]) / 5)
+
+            o[valutaAvans] = o[valutaAvans] - (avansPerMember - (avansPerMember - o[valutaAvans]))
+          }
+          o.avansPerMember = avansPerMember
+          o.valutaAvans = obj.valutaAvans
+        }
+      })
+    }
+  })
+
 }
 
 function handleNumeEvenimentInput (value) {
@@ -613,8 +740,15 @@ function handleNumeSpendingInput (value) {
   inputModal.value = value
 }
 
-function openModal (index, name, section, currency, companyEvent) {
+function openModal (index, name, section, currency, companyEvent, ifAvans, avansMembrii, pretAvans, valutaAvans) {
   checkboxIfFirma.value = companyEvent ? companyEvent : false
+
+  checkboxIfAvans.value = ifAvans ? ifAvans : false
+  priceAvans.value = ifAvans ? pretAvans : null
+  currencyAvans.value = ifAvans ? valutaAvans : '€'
+
+  modelMultiple.value = ifAvans ? avansMembrii : []
+
   modalSettings.value[section].index = index
   modalSettings.value[section].openModal = true
   inputModal.value = name
@@ -628,8 +762,19 @@ function handleSaveModalInput (index, section, valuta) {
       obj.name = inputModal.value
       obj.currency = valuta
       if (section === 'events') {
+
         obj.companyEvent = checkboxIfFirma.value
         obj.priceWithCompanySpendings = applyCompanySpendings(obj.value)
+
+        if (priceAvans.value && modelMultiple.value.length) {
+          obj.ifAvans = checkboxIfAvans.value
+          obj.pretAvans = priceAvans.value
+          obj.valutaAvans = currencyAvans.value
+          obj.avansMembrii = modelMultiple.value
+        }
+        else {
+          obj.ifAvans = false
+        }
       }
     }
   })
@@ -664,11 +809,15 @@ function stopScroll (event) {
 }
 
 function handleAdd (section) {
-  data.value[section].push(  {
+  data.value[section].push({
     value: null,
     focus: false,
     name: '',
-    currency: '€'
+    avansMembrii: [],
+    currency: '€',
+    pretAvans: null,
+    valutaAvans: '€',
+    ifAvans: false
   })
 
 }
@@ -701,6 +850,18 @@ function handleDelete (index, section) {
 .input-events-spendings {
   .q-field__native {
     text-align: right;
+  }
+}
+
+.input-price-right {
+  .q-field__native {
+    text-align: right;
+  }
+}
+
+.input-price-left {
+  .q-field__native {
+    text-align: left;
   }
 }
 </style>
