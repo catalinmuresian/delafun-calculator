@@ -745,7 +745,10 @@ function calculate () {
   })
 
   rows.forEach(row => {
-    row.totalAvans = listAvans[row.name].reduce((partialSum, a) => (partialSum + a).toFixed(0), 0);
+    row.totalAvans =
+      listAvans[row.name].length
+        ? listAvans[row.name].reduce((partialSum, a) => partialSum + a, 0).toFixed(0)
+        : null;
   })
 }
 
