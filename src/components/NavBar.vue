@@ -3,7 +3,7 @@
     <q-dialog v-model="modalInfo">
       <q-card>
         <q-card-section class="row items-center">
-          <span class="q-ml-sm">Calculator delaFun v1.1</span>
+          <span class="q-ml-sm">Calculator delaFun v1.2</span>
         </q-card-section>
       </q-card>
     </q-dialog>

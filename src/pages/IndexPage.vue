@@ -281,7 +281,7 @@
                           color="green"
                           name="info"/>
                   <div style="display: flex;flex-direction: column;padding-top: 1px">
-                    <span style="font-size: 10px;color: grey;font-weight: 500;">{{ `Avans - ${pretAvans}${currencyAvans}`}}</span>
+                    <span style="font-size: 10px;color: grey;font-weight: 500;">{{ `Avans - ${pretAvans} ${valutaAvans}`}}</span>
                     <div style="font-size: 14px;color: black;font-weight: 500;display: flex;gap: 5px;flex-wrap: wrap;">
                       <span v-for="(membru, index) in avansMembrii">{{ `${membru}${index + 1 !== avansMembrii.length ? ',' : ''}` }}
                         </span>
@@ -728,7 +728,7 @@ function calculate () {
       rows.forEach(o => {
         if (obj.avansMembrii.includes(o.name)) {
           if (o[valutaAvans] > avansPerMember) {
-            o[valutaAvans] = o[valutaAvans] - avansPerMember
+            o[valutaAvans] = (o[valutaAvans] - avansPerMember).toFixed(0)
           }
           else {
             o[valutaOpusa] =
@@ -745,7 +745,7 @@ function calculate () {
   })
 
   rows.forEach(row => {
-    row.totalAvans = listAvans[row.name].reduce((partialSum, a) => partialSum + a, 0);
+    row.totalAvans = listAvans[row.name].reduce((partialSum, a) => (partialSum + a).toFixed(0), 0);
   })
 }
 
