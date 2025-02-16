@@ -165,7 +165,6 @@
       </q-card>
     </q-dialog>
 
-
     <q-dialog v-model="modalSettings.spendings.openModal" persistent>
       <q-card style="width: 100%">
         <q-card-section>
@@ -349,6 +348,37 @@
         </q-card-section>
       </q-card>
     </q-expansion-item>
+    <q-expansion-item
+      v-model="membersExpansion">
+      <template v-slot:header>
+        <q-item-section>
+          <div>
+            <h6 style="margin: 0;position: relative;display: inline">
+              Membrii
+            </h6>
+          </div>
+        </q-item-section>
+      </template>
+      <q-list dense>
+        <q-item
+          tag="label"
+          v-ripple
+          v-for="{id, label} in membersList"
+          :key="id">
+          <q-item-section avatar>
+            <q-checkbox
+              :model-value="members[id]"
+              @update:model-value="(val) => handleMembersCheckbox(id, val)"
+              left-label
+              color="primary"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ label }}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-expansion-item>
     <div style="padding: 0 16px;margin-top: 20px;display: flex;align-items: center;gap: 10px">
       <q-btn
         style="width: 100%;"
@@ -378,7 +408,7 @@
         row-key="name"
         separator="cell">
         <template v-slot:body="props">
-          <q-tr :props="props">
+          <q-tr :style="!props.row.status && 'background-color: lightgray;'" :props="props">
             <q-td key="name"
                   style="
                   display: flex;
@@ -408,10 +438,10 @@
         </template>
       </q-table>
       <q-expansion-item
+        v-if="false"
         style="margin-top: 10px;"
         dense
-        label="Detaliat"
-      >
+        label="Detaliat">
         <q-card>
           <q-card-section>
             <div class="flex" style="gap: 10px;align-items: center" >
@@ -471,6 +501,7 @@ import {ref} from "vue";
 
 const eventsExpansion = ref(true)
 const spendingsExpansion = ref(true)
+const membersExpansion = ref(false)
 
 const confirmDeleteEvent = ref(false)
 const confirmDeleteSpending = ref(false)
@@ -493,39 +524,51 @@ const columns = [
 const rows = [
   {
     name: 'Catalin',
+    id: 'catalin',
     euro: 0,
     lei: 0,
-    totalAvans: null
+    totalAvans: null,
+    status: true
   },
   {
     name: 'Vali',
+    id: 'vali',
     euro: 0,
     lei: 0,
-    totalAvans: null
+    totalAvans: null,
+    status: true
   },
   {
     name: 'Ion',
+    id: 'ion',
     euro: 0,
     lei: 0,
-    totalAvans: null
+    totalAvans: null,
+    status: true
   },
   {
     name: 'Sarpe',
+    id: 'sarpe',
     euro: 0,
     lei: 0,
-    totalAvans: null
+    totalAvans: null,
+    status: true
   },
   {
     name: 'Tony',
+    id: 'tony',
     euro: 0,
     lei: 0,
-    totalAvans: null
+    totalAvans: null,
+    status: true
   },
   {
     name: 'Radu',
+    id: 'radu',
     euro: 0,
     lei: 0,
-    totalAvans: null
+    totalAvans: null,
+    status: true
   },
 ]
 
@@ -550,6 +593,40 @@ const data = ref({
 })
 const valuta = ref('')
 const optionsValuta = ref(['lei', '€'])
+const members = ref({
+  catalin: true,
+  vali: true,
+  ion: true,
+  sarpe: true,
+  radu: true,
+  tony: true
+})
+const membersList = ref([
+  {
+    id: 'catalin',
+    label: 'Catalin'
+  },
+  {
+    id: 'vali',
+    label: 'Vali'
+  },
+  {
+    id: 'ion',
+    label: 'Ion'
+  },
+  {
+    id: 'sarpe',
+    label: 'Sarpe'
+  },
+  {
+    id: 'tony',
+    label: 'Tony'
+  },
+  {
+    id: 'radu',
+    label: 'Radu'
+  },
+])
 
 const totalSum = ref({
   totalSumaEvenimenteEuro: 0,
@@ -566,6 +643,10 @@ const totalSum = ref({
 
 const calculHasMade = ref(false)
 
+function handleMembersCheckbox (id, val) {
+  members.value[id] = val
+}
+
 function noEvents () {
   return data.value.events.length < 1
 }
@@ -581,7 +662,10 @@ function resetAll () {
   rows.forEach(row => {
     row.euro = 0
     row.lei = 0
+    row.status = true
+    members.value[row.id] = true
   })
+
   valuta.value = ''
   eventsExpansion.value = false
   spendingsExpansion.value = false
@@ -591,6 +675,7 @@ function calculate () {
   calculHasMade.value = true
   eventsExpansion.value = false
   spendingsExpansion.value = false
+  membersExpansion.value = false
 
   let totalPriceEventsEuro
   let totalPriceEventsLei
@@ -750,6 +835,35 @@ function calculate () {
         ? listAvans[row.name].reduce((partialSum, a) => partialSum + a, 0).toFixed(0)
         : null;
   })
+
+  redistributeIncome()
+
+}
+
+function redistributeIncome () {
+  let euro = 0
+  let lei = 0
+  let membersActive = 0
+
+  rows.forEach(obj => {
+    if (!members.value[obj?.id]) {
+      euro = euro + obj.euro
+      lei = lei + obj.lei
+    }
+    members.value[obj?.id] && (membersActive += 1)
+    obj.status = members.value[obj?.id]
+  })
+
+  rows.forEach(obj => {
+    if (obj.status) {
+      obj.euro = Math.floor(obj.euro + (euro / membersActive))
+      obj.lei = Math.floor(obj.lei + (lei / membersActive))
+    }
+    else {
+      obj.euro = 0
+      obj.lei = 0
+    }
+  })
 }
 
 function handleNumeEvenimentInput (value) {
@@ -839,7 +953,6 @@ function handleAdd (section) {
     valutaAvans: '€',
     ifAvans: false
   })
-
 }
 
 function handleDelete (index, section) {
