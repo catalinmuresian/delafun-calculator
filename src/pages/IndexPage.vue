@@ -1,5 +1,5 @@
 <template>
-  <q-page style="min-height: unset;">
+  <q-page style="min-height: unset;padding-bottom: 60px">
     <q-dialog v-model="confirmDeleteEvent" persistent>
       <q-card>
         <q-card-section class="row items-center">
@@ -55,6 +55,35 @@
           <q-btn flat
                  no-caps
                  @click="resetAll"
+                 label="Da"
+                 color="info"
+                 v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="confirmDownload" persistent>
+      <q-card>
+        <q-card-section class="row items-center"
+                        style="display: flex;flex-direction: column;align-items: flex-start;gap: 10px">
+          <span>Esti sigur ca vrei sa downloadezi fisierul ?</span>
+          <div class="filename full-width">
+
+            <q-input label="Nume fisier"
+                     dense
+                     v-model="fileName"
+                     flat
+            />
+          </div>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat
+                 label="Nu"
+                 no-caps
+                 color="grey"
+                 v-close-popup />
+          <q-btn flat
+                 no-caps
+                 @click="exportTable()"
                  label="Da"
                  color="info"
                  v-close-popup />
@@ -164,7 +193,6 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
     <q-dialog v-model="modalSettings.spendings.openModal" persistent>
       <q-card style="width: 100%">
         <q-card-section>
@@ -209,6 +237,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
     <q-expansion-item
       v-model="eventsExpansion">
       <template v-slot:header>
@@ -392,11 +421,56 @@
              @click="confirmReset = true"
              dense
              color="brown-4"
-             icon="restart_alt" />
+             icon="restart_alt"
+      />
+      <q-btn v-if="calculHasMade"
+             round
+             @click="confirmDownload = true"
+             dense
+             color="violet"
+             icon="download"
+      />
     </div>
     <div
       v-if="getResultsCalcul"
       style="margin-top: 20px;padding: 0 16px;">
+      <q-table
+        class="download-table"
+        flat
+        hide-bottom
+        bordered
+        :rows="downloadRows"
+        :columns="downloadColumns"
+        :pagination="{ rowsPerPage: 0 }"
+        row-key="name"
+        separator="cell">
+        <template v-slot:body="props">
+          <q-tr :style="!props.row.status && !props.row.isEvent && !props.row.isSpendings && 'background-color: lightgray;'" :props="props">
+            <q-td key="name"
+                  style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;"
+                  :props="props">
+              <span>
+                {{ props.row.name }}
+              </span>
+            </q-td>
+            <q-td key="euro" :props="props">
+              {{ props.row.euro ? `${props.row.euro} €` : ''  }}
+            </q-td>
+            <q-td key="lei" :props="props">
+              {{ props.row.lei ? `${props.row.lei} lei` : '' }}
+            </q-td>
+            <q-td key="avans" :props="props">
+              {{  props.row.isEvent
+              ? props.row.avans ? `${props.row.avans} €` : ''
+              : props.row.totalAvans ? `${props.row.totalAvans} €` : '' }}
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+      <br>
       <q-table
         flat
         hide-header
@@ -437,6 +511,7 @@
           </q-tr>
         </template>
       </q-table>
+
       <q-expansion-item
         v-if="false"
         style="margin-top: 10px;"
@@ -497,7 +572,9 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {computed, onMounted, ref} from "vue";
+import {date, exportFile, useQuasar} from "quasar";
+const $q = useQuasar()
 
 const eventsExpansion = ref(true)
 const spendingsExpansion = ref(true)
@@ -514,13 +591,19 @@ const currencyAvans = ref('€')
 const getResultsCalcul = ref(false)
 
 const confirmReset = ref(false)
+const confirmDownload = ref(false)
+const fileName = ref('')
+
+onMounted(() => {
+  const today = new Date()
+  fileName.value = `delaFun - ${date.formatDate(today, 'DD.MM.YYYY')}`
+})
 
 const columns = [
-  { name: 'name', required: true, label: 'Nume', align: 'left', field: row => row.name, format: val => `${val}`, sortable: true},
-  { name: 'euro', align: 'center', label: 'Euro', field: 'euro', format: val => `${val} €`,  sortable: true },
-  { name: 'lei', label: 'Lei', field: 'lei', format: val => `${val} lei`, sortable: true },
+  { name: 'name', required: true, label: 'Nume', align: 'left', field: row => row.name, format: val => val ? `${val}` : ''},
+  { name: 'euro', align: 'right', label: 'Euro', field: 'euro', format: val => val ? `${val} €` : '' },
+  { name: 'lei', label: 'Lei', field: 'lei', format: val => `${val} lei` },
 ]
-
 const rows = [
   {
     name: 'Catalin',
@@ -571,7 +654,6 @@ const rows = [
     status: true
   },
 ]
-
 const inputModal = ref('')
 const modalSettings = ref({
   events: {
@@ -591,6 +673,10 @@ const data = ref({
   events: [],
   spendings: []
 })
+
+const downloadRows = ref([])
+const downloadColumns = ref([])
+
 const valuta = ref('')
 const optionsValuta = ref(['lei', '€'])
 const members = ref({
@@ -642,6 +728,53 @@ const totalSum = ref({
 })
 
 const calculHasMade = ref(false)
+
+function wrapCsvValue (val, formatFn, row) {
+  let formatted = formatFn !== void 0
+    ? formatFn(val, row)
+    : val
+
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+
+  formatted = formatted.split('"').join('""')
+  /**
+   * Excel accepts \n and \r in strings, but some other CSV parsers do not
+   * Uncomment the next two lines to escape new lines
+   */
+  // .split('\n').join('\\n')
+  // .split('\r').join('\\r')
+
+  return `"${formatted}"`
+}
+
+function exportTable () {
+  // naive encoding to csv format
+  const content = [downloadColumns.value.map(col => wrapCsvValue(col.label))].concat(
+    downloadRows.value.map(row => downloadColumns.value.map(col => wrapCsvValue(
+      typeof col.field === 'function'
+        ? col.field(row)
+        : row[ col.field === void 0 ? col.name : col.field ],
+      col.format,
+      row
+    )).join(','))
+  ).join('\r\n')
+
+  const status = exportFile(
+    `${fileName.value}.csv`,
+    content,
+    'text/csv'
+  )
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning'
+    })
+  }
+}
 
 function handleMembersCheckbox (id, val) {
   members.value[id] = val
@@ -808,12 +941,12 @@ function calculate () {
     if (obj.ifAvans) {
       const valutaAvans = obj.valutaAvans === '€' ? 'euro' : 'lei'
       const valutaOpusa = obj.valutaAvans === '€' ? 'lei' : 'euro'
-      const avansPerMember = (obj.pretAvans / obj.avansMembrii.length).toFixed(0)
+      const avansPerMember = _number((obj.pretAvans / obj.avansMembrii.length).toFixed(0))
 
       rows.forEach(o => {
         if (obj.avansMembrii.includes(o.name)) {
           if (o[valutaAvans] > avansPerMember) {
-            o[valutaAvans] = (o[valutaAvans] - avansPerMember).toFixed(0)
+            o[valutaAvans] = _number((o[valutaAvans] - avansPerMember).toFixed(0))
           }
           else {
             o[valutaOpusa] =
@@ -832,12 +965,62 @@ function calculate () {
   rows.forEach(row => {
     row.totalAvans =
       listAvans[row.name].length
-        ? listAvans[row.name].reduce((partialSum, a) => partialSum + a, 0).toFixed(0)
+        ? _number(listAvans[row.name].reduce((partialSum, a) => partialSum + a, 0).toFixed(0))
         : null;
   })
 
-  redistributeIncome()
+  Object.values(members.value).includes(false) && redistributeIncome()
 
+  setDownloadbleRows()
+  setDownloadbleColumns()
+
+}
+
+function _number (number) {
+  return number * 1
+}
+
+function setDownloadbleRows () {
+  let customRows = []
+  const events = data.value.events.slice()
+  const spendings = data.value.spendings.slice()
+  events.forEach((obj, index) => {
+    customRows.push({
+      isEvent: true,
+      id: `eveniment_${index + 1}`,
+      name: obj.companyEvent
+        ? `Eveniment ${obj.name || index + 1} ( ${obj.value} ${obj.currency} - 13% Firma )`
+        : `Eveniment ${obj.name || index + 1}`,
+      pret: obj.value,
+      euro: obj.currency === '€' ? obj.companyEvent ? obj.priceWithCompanySpendings : obj.value : '',
+      lei: obj.currency === 'lei' ? obj.companyEvent ? obj.priceWithCompanySpendings : obj.value : '',
+      currency: obj.currency,
+      valutaAvans: obj.valutaAvans,
+      avans: obj.valutaAvans === '€' ? obj.pretAvans : obj.pretAvans / 5,
+      avansMembrii: obj.avansMembrii,
+      priceAfterCompanySpendings: obj.priceWithCompanySpendings
+    })
+  })
+
+  spendings.forEach((obj, index) => {
+    customRows.push({
+      isSpendings: true,
+      id: `cheltuiala_${index + 1}`,
+      name: `Cheltuiala ${obj.name || index + 1}`,
+      euro: obj.currency === '€' ? obj.value : 0,
+      lei: obj.currency === 'lei' ? obj.value : 0,
+    })
+  })
+  downloadRows.value = [...customRows, ...rows]
+}
+
+function setDownloadbleColumns () {
+  downloadColumns.value = [
+    { name: 'name', required: true, label: 'Nume', align: 'left', field: row => row.name, format: val => `${val}`},
+    { name: 'euro', align: 'right', label: 'Euro', field: 'euro', format: val => val ? `${val} €` : '' },
+    { name: 'lei', align: 'right', label: 'Lei', field: 'lei', format: val => val ? `${val} lei` : '' },
+    { name: 'avans', required: true, label: 'Pret avans', align: 'right', field: row => row.isEvent ? row.avans : row.totalAvans, format: (val) => val ? `${val} €` : ''},
+  ]
 }
 
 function redistributeIncome () {
