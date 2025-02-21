@@ -435,6 +435,7 @@
       v-if="getResultsCalcul"
       style="margin-top: 20px;padding: 0 16px;">
       <q-table
+        v-if="false"
         class="download-table"
         flat
         hide-bottom
@@ -470,7 +471,6 @@
           </q-tr>
         </template>
       </q-table>
-      <br>
       <q-table
         flat
         hide-header
