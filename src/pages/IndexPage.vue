@@ -967,6 +967,8 @@ function calculate () {
       listAvans[row.name].length
         ? _number(listAvans[row.name].reduce((partialSum, a) => partialSum + a, 0).toFixed(0))
         : null;
+    row.status = members.value[row?.id]
+
   })
 
   Object.values(members.value).includes(false) && redistributeIncome()
