@@ -991,7 +991,7 @@ function setDownloadbleRows () {
       isEvent: true,
       id: `eveniment_${index + 1}`,
       name: obj.companyEvent
-        ? `Eveniment ${obj.name || index + 1} ( ${obj.value} ${obj.currency} - 13% Firma )`
+        ? `Eveniment ${obj.name || index + 1} ( ${obj.value} ${obj.currency} - 11% Firma )`
         : `Eveniment ${obj.name || index + 1}`,
       pret: obj.value,
       euro: obj.currency === '€' ? obj.companyEvent ? obj.priceWithCompanySpendings : obj.value : '',
