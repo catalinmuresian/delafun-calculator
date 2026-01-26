@@ -3,7 +3,7 @@
     <q-dialog v-model="modalInfo">
       <q-card>
         <q-card-section class="row items-center">
-          <span class="q-ml-sm">Calculator delaFun v1.5</span>
+          <span class="q-ml-sm text-italic">last update - {{ `${date.formatDate($build_version, 'DD.MM.YYYY')}`}}</span>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-
+import { date } from 'quasar'
 import {ref} from "vue";
 
 const modalInfo = ref(false)

@@ -121,7 +121,7 @@
         <q-card-section style="display: flex;gap: 5px;align-items: flex-start;">
           <q-checkbox dense color="orange"
                       v-model="checkboxIfFirma" />
-          Cheltuieli firma 13%
+          Cheltuieli firma 11%
         </q-card-section>
         <q-card-section style="display: flex;gap: 5px;align-items: flex-start;flex-direction: column">
           <div style="display: flex;align-items: flex-start;gap: 5px">
@@ -299,7 +299,7 @@
                           color="orange"
                           name="info"/>
                   <div style="display: flex;flex-direction: column;padding-top: 1px">
-                    <span style="font-size: 10px;color: grey;font-weight: 500;">- 13% Firma</span>
+                    <span style="font-size: 10px;color: grey;font-weight: 500;">- 11% Firma</span>
                     <span style="font-size: 14px;color: black;font-weight: 500;">{{ `${priceWithCompanySpendings} ${currency}` }}</span>
                   </div>
                 </div>
@@ -1101,7 +1101,7 @@ function handleSaveModalInput (index, section, valuta) {
 }
 
 function applyCompanySpendings (value) {
-  return (value - (value * 0.13))
+  return (value - (value * 0.11))
 }
 
 function focusButtonFunc (index, section) {
