@@ -1,10 +1,18 @@
 import { register } from 'register-service-worker'
 
 register(process.env.SERVICE_WORKER_FILE, {
-  ready (/* registration */) {},
-  registered (/* registration */) {},
-  cached (/* registration */) {},
-  updatefound (/* registration */) {},
+  ready () {},
+
+  registered (registration) {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        registration.update()
+      }
+    })
+  },
+
+  cached () {},
+  updatefound () {},
 
   updated (registration) {
     if (registration.waiting) {
@@ -16,7 +24,6 @@ register(process.env.SERVICE_WORKER_FILE, {
   error (/* err */) {}
 })
 
-// Reload the page when the new service worker takes control
 if (navigator.serviceWorker) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     window.location.reload()

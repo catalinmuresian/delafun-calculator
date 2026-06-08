@@ -12,7 +12,7 @@
             outlined
             @wheel="$event.target.blur()"
           />
-          <span class="text-italic q-mt-md">dev app last update - {{ `${date.formatDate($build_version, 'DD.MM.YYYY')}`}}</span>
+          <span class="text-italic q-mt-md">dev app last update - {{ `${date.formatDate($build_version, 'DD.MM.YYYY HH:mm')}`}}</span>
           <q-btn class="q-mt-md full-width"
                  filled
                  label="Salveaza"
