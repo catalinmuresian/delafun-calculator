@@ -76,5 +76,20 @@ export default [
       { value: 900,  focus: false, name: 'Transport International', currency: '€' },
       { value: 2000, focus: false, name: 'Catering',             currency: 'lei' },
     ]
+  },
+  {
+    // cursEuro 5.0 → first calculate; then cursEuro changes to 6.0 → recalculate same data
+    // lei spendings (2000) > lei events (0) → sum/cursEuro subtracted from euro total
+    // with cursEuro=5.0: remainingEuro = 500 - 400 = 100 → Catalin/Vali 13€, rest 18€
+    // with cursEuro=6.0: remainingEuro = 500 - 333 = 166 → Catalin/Vali 21€, rest 30€
+    label: 'Scenariu 6 - Recalcul dupa schimbare curs euro',
+    cursEuro: 5.0,
+    newCursEuro: 6.0,
+    events: [
+      { value: 500, focus: false, name: 'Nunta Test', currency: '€', companyEvent: false, priceWithCompanySpendings: 500, ifAvans: false, pretAvans: null, valutaAvans: '€', avansMembrii: [] },
+    ],
+    spendings: [
+      { value: 2000, focus: false, name: 'Catering', currency: 'lei' },
+    ]
   }
 ]

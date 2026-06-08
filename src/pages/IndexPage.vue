@@ -431,6 +431,7 @@
              icon="download"
       />
     </div>
+    <span v-if="forceRender" style="display:none" aria-hidden="true"></span>
     <div
       v-if="getResultsCalcul"
       style="margin-top: 20px;padding: 0 16px;">
@@ -572,7 +573,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, reactive, ref} from "vue";
+import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import {date, exportFile, useQuasar} from "quasar";
 import { useStore } from 'vuex';
 const $q = useQuasar()
@@ -592,6 +593,7 @@ const priceAvans = ref(null)
 const currencyAvans = ref('€')
 
 const getResultsCalcul = ref(false)
+const forceRender = ref(true)
 
 const confirmReset = ref(false)
 const confirmDownload = ref(false)
@@ -604,6 +606,7 @@ onMounted(() => {
   if (process.env.DEV) {
     window.__runTestScenario = (scenario) => {
       resetAll()
+      if (scenario.cursEuro) store.commit('moduleExample/SET_CURS_EURO', scenario.cursEuro)
       data.value.events = scenario.events.map(e => ({ ...e }))
       data.value.spendings = scenario.spendings.map(sp => ({ ...sp }))
       if (scenario.members) {
@@ -613,6 +616,10 @@ onMounted(() => {
       }
       eventsExpansion.value = true
       spendingsExpansion.value = true
+      calculate()
+    }
+    window.__recalculateWithCursEuro = (newCursEuro) => {
+      store.commit('moduleExample/SET_CURS_EURO', newCursEuro)
       calculate()
     }
   }
@@ -825,7 +832,6 @@ function resetAll () {
 }
 function calculate () {
   calculHasMade.value = true
-  getResultsCalcul.value = false
   eventsExpansion.value = false
   spendingsExpansion.value = false
   membersExpansion.value = false
@@ -997,10 +1003,12 @@ function calculate () {
   setDownloadbleRows()
   setDownloadbleColumns()
 
-  setTimeout(() => {
+  forceRender.value = false
+  nextTick(() => {
     tableRows.value = rows.map(r => ({...r}))
     getResultsCalcul.value = true
-  }, 0)
+    forceRender.value = true
+  })
 }
 
 function _number (number) {

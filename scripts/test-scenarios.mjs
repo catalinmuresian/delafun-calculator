@@ -33,6 +33,11 @@ async function runScenario(page, scenario) {
   await page.evaluate((s) => window.__runTestScenario(s), scenario);
   await page.waitForTimeout(500);
 
+  if (scenario.newCursEuro) {
+    await page.evaluate((c) => window.__recalculateWithCursEuro(c), scenario.newCursEuro);
+    await page.waitForTimeout(500);
+  }
+
   const cells = await page.$$eval('td', tds => tds.map(td => td.innerText.trim()).filter(t => t));
   const rows = [];
   for (let i = 0; i < cells.length; i += 3) {

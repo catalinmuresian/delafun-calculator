@@ -203,5 +203,16 @@
         "avans": "125 €"
       }
     ]
+  },
+  {
+    "label": "Scenariu 6 - Recalcul dupa schimbare curs euro",
+    "rows": [
+      { "name": "Catalin", "euro": "21 €", "lei": "0 lei", "avans": null },
+      { "name": "Vali",    "euro": "21 €", "lei": "0 lei", "avans": null },
+      { "name": "Ion",     "euro": "30 €", "lei": "0 lei", "avans": null },
+      { "name": "Sarpe",   "euro": "30 €", "lei": "0 lei", "avans": null },
+      { "name": "Tony",    "euro": "30 €", "lei": "0 lei", "avans": null },
+      { "name": "Radu",    "euro": "30 €", "lei": "0 lei", "avans": null }
+    ]
   }
 ]
