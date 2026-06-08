@@ -572,7 +572,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {date, exportFile, useQuasar} from "quasar";
 import { useStore } from 'vuex';
 const $q = useQuasar()
@@ -747,7 +747,7 @@ const totalSum = ref({
 })
 
 const calculHasMade = ref(false)
-const tableRows = computed(() => rows.map(r => ({...r})))
+const tableRows = ref(rows.map(r => ({...r})))
 
 function wrapCsvValue (val, formatFn, row) {
   let formatted = formatFn !== void 0
@@ -996,6 +996,7 @@ function calculate () {
 
   setDownloadbleRows()
   setDownloadbleColumns()
+  tableRows.value = rows.map(r => ({...r}))
 }
 
 function _number (number) {
