@@ -65,19 +65,19 @@
         "name": "Sarpe",
         "euro": "413 €",
         "lei": "281 lei",
-        "avans": "96 €"
+        "avans": "500 lei"
       },
       {
         "name": "Tony",
         "euro": "413 €",
         "lei": "281 lei",
-        "avans": "96 €"
+        "avans": "500 lei"
       },
       {
         "name": "Radu",
         "euro": "413 €",
         "lei": "281 lei",
-        "avans": "96 €"
+        "avans": "500 lei"
       }
     ]
   },
@@ -141,7 +141,7 @@
         "name": "Ion",
         "euro": "171 €",
         "lei": "0 lei",
-        "avans": "58 €"
+        "avans": "300 lei"
       },
       {
         "name": "Sarpe",
@@ -170,13 +170,13 @@
         "name": "Catalin",
         "euro": "0 €",
         "lei": "400 lei",
-        "avans": "77 €"
+        "avans": "400 lei"
       },
       {
         "name": "Vali",
         "euro": "0 €",
         "lei": "400 lei",
-        "avans": "77 €"
+        "avans": "400 lei"
       },
       {
         "name": "Ion",
@@ -207,12 +207,42 @@
   {
     "label": "Scenariu 6 - Recalcul dupa schimbare curs euro",
     "rows": [
-      { "name": "Catalin", "euro": "21 €", "lei": "0 lei", "avans": null },
-      { "name": "Vali",    "euro": "21 €", "lei": "0 lei", "avans": null },
-      { "name": "Ion",     "euro": "30 €", "lei": "0 lei", "avans": null },
-      { "name": "Sarpe",   "euro": "30 €", "lei": "0 lei", "avans": null },
-      { "name": "Tony",    "euro": "30 €", "lei": "0 lei", "avans": null },
-      { "name": "Radu",    "euro": "30 €", "lei": "0 lei", "avans": null }
+      {
+        "name": "Catalin",
+        "euro": "21 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Vali",
+        "euro": "21 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Ion",
+        "euro": "30 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Sarpe",
+        "euro": "30 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Tony",
+        "euro": "30 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Radu",
+        "euro": "30 €",
+        "lei": "0 lei",
+        "avans": null
+      }
     ]
   }
 ]

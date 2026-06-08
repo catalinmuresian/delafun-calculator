@@ -12,7 +12,6 @@
             outlined
             @wheel="$event.target.blur()"
           />
-          <span class="text-italic q-mt-md">app last update - {{ `${date.formatDate($build_version, 'DD.MM.YYYY')}`}}</span>
           <q-btn class="q-mt-md full-width"
                  filled
                  label="Salveaza"
@@ -20,6 +19,8 @@
                  color="positive"
                  @click="saveCursEuro"
                  v-close-popup />
+          <span class="text-italic q-mt-md" style="font-size: 12px;color: grey">app last update - {{ `${date.formatDate($build_version, 'DD.MM.YYYY')}`}}</span>
+
 
         </q-card-section>
       </q-card>

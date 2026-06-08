@@ -493,14 +493,14 @@
               <span>
                 {{ props.row.name }}
               </span>
-              <div v-if="props.row.totalAvans"
+              <div v-if="props.row.totalAvansEuro || props.row.totalAvansLei"
                    style="color: grey;font-size: 10px;display: flex;align-items: center;gap: 3px">
-
                 <q-icon size="18px"
                         color="green"
                         name="info"/>
-                {{ `${props.row.totalAvans} €` }}
-
+                <span v-if="props.row.totalAvansEuro">{{ `${props.row.totalAvansEuro} €` }}</span>
+                <span v-if="props.row.totalAvansEuro && props.row.totalAvansLei"> + </span>
+                <span v-if="props.row.totalAvansLei">{{ `${props.row.totalAvansLei} lei` }}</span>
               </div>
             </q-td>
             <q-td key="euro" :props="props">
@@ -512,6 +512,24 @@
           </q-tr>
         </template>
       </q-table>
+
+      <div v-if="spendingsSnapshot.length" style="margin-top: 12px;">
+        <span style="font-size: 11px;color: grey;font-weight: 500;text-transform: uppercase;letter-spacing: 0.5px;">Cheltuieli</span>
+        <div style="margin-top: 4px;">
+          <div style="border-top: 1px solid #e0e0e0;" />
+          <div
+            v-for="(sp, index) in spendingsSnapshot"
+            :key="index">
+            <div v-if="sp.value"
+                 style="display: flex;align-items: center;gap: 10px;padding: 6px 4px;">
+              <span style="font-size: 13px;color: #888;">{{ sp.name || `#${index + 1}` }}</span>
+              <span> - </span>
+              <span style="font-size: 13px;font-weight: 500;">{{ `${sp.value} ${sp.currency}` }}</span>
+            </div>
+            <div style="border-top: 1px solid #e0e0e0;" />
+          </div>
+        </div>
+      </div>
 
       <q-expansion-item
         v-if="false"
@@ -636,7 +654,8 @@ const rows = reactive([
     id: 'catalin',
     euro: 0,
     lei: 0,
-    totalAvans: null,
+    totalAvansEuro: null,
+    totalAvansLei: null,
     status: true
   },
   {
@@ -644,7 +663,8 @@ const rows = reactive([
     id: 'vali',
     euro: 0,
     lei: 0,
-    totalAvans: null,
+    totalAvansEuro: null,
+    totalAvansLei: null,
     status: true
   },
   {
@@ -652,7 +672,8 @@ const rows = reactive([
     id: 'ion',
     euro: 0,
     lei: 0,
-    totalAvans: null,
+    totalAvansEuro: null,
+    totalAvansLei: null,
     status: true
   },
   {
@@ -660,7 +681,8 @@ const rows = reactive([
     id: 'sarpe',
     euro: 0,
     lei: 0,
-    totalAvans: null,
+    totalAvansEuro: null,
+    totalAvansLei: null,
     status: true
   },
   {
@@ -668,7 +690,8 @@ const rows = reactive([
     id: 'tony',
     euro: 0,
     lei: 0,
-    totalAvans: null,
+    totalAvansEuro: null,
+    totalAvansLei: null,
     status: true
   },
   {
@@ -676,7 +699,8 @@ const rows = reactive([
     id: 'radu',
     euro: 0,
     lei: 0,
-    totalAvans: null,
+    totalAvansEuro: null,
+    totalAvansLei: null,
     status: true
   },
 ])
@@ -755,6 +779,7 @@ const totalSum = ref({
 
 const calculHasMade = ref(false)
 const tableRows = ref(rows.map(r => ({...r})))
+const spendingsSnapshot = ref([])
 
 function wrapCsvValue (val, formatFn, row) {
   let formatted = formatFn !== void 0
@@ -822,11 +847,14 @@ function resetAll () {
   rows.forEach(row => {
     row.euro = 0
     row.lei = 0
+    row.totalAvansEuro = null
+    row.totalAvansLei = null
     row.status = true
     members.value[row.id] = true
   })
 
   valuta.value = ''
+  spendingsSnapshot.value = []
   eventsExpansion.value = false
   spendingsExpansion.value = false
 }
@@ -956,12 +984,12 @@ function calculate () {
   totalSum.value.totalSumaRamasaDupaCatalinSiValiLei = sumAfterCatalinSiValiLei
 
   const listAvans = {
-    Catalin: [],
-    Vali: [],
-    Ion: [],
-    Radu: [],
-    Sarpe: [],
-    Tony: []
+    Catalin: { euro: [], lei: [] },
+    Vali: { euro: [], lei: [] },
+    Ion: { euro: [], lei: [] },
+    Radu: { euro: [], lei: [] },
+    Sarpe: { euro: [], lei: [] },
+    Tony: { euro: [], lei: [] }
   }
   data.value.events.forEach(obj => {
     if (obj.ifAvans) {
@@ -982,17 +1010,17 @@ function calculate () {
 
             o[valutaAvans] = o[valutaAvans] - (avansPerMember - (avansPerMember - o[valutaAvans]))
           }
-          listAvans[o.name].push(valutaAvans === 'euro' ? avansPerMember * 1 : ((avansPerMember * 1) / cursEuro.value))
+          listAvans[o.name][valutaAvans].push(avansPerMember * 1)
         }
       })
     }
   })
 
   rows.forEach(row => {
-    row.totalAvans =
-      listAvans[row.name].length
-        ? _number(listAvans[row.name].reduce((partialSum, a) => partialSum + a, 0).toFixed(0))
-        : null;
+    const avansEuro = listAvans[row.name].euro.reduce((sum, a) => sum + a, 0)
+    const avansLei = listAvans[row.name].lei.reduce((sum, a) => sum + a, 0)
+    row.totalAvansEuro = avansEuro ? _number(avansEuro.toFixed(0)) : null
+    row.totalAvansLei = avansLei ? _number(avansLei.toFixed(0)) : null
     row.status = members.value[row?.id]
     row.euro = row.euro.toFixed(0) * 1
     row.lei = row.lei.toFixed(0) * 1
@@ -1006,6 +1034,7 @@ function calculate () {
   forceRender.value = false
   nextTick(() => {
     tableRows.value = rows.map(r => ({...r}))
+    spendingsSnapshot.value = data.value.spendings.map(s => ({...s}))
     getResultsCalcul.value = true
     forceRender.value = true
   })
@@ -1031,7 +1060,8 @@ function setDownloadbleRows () {
       lei: obj.currency === 'lei' ? obj.companyEvent ? obj.priceWithCompanySpendings : obj.value : '',
       currency: obj.currency,
       valutaAvans: obj.valutaAvans,
-      avans: obj.valutaAvans === '€' ? obj.pretAvans : obj.pretAvans / cursEuro.value,
+      avansEuro: obj.valutaAvans === '€' ? obj.pretAvans : null,
+      avansLei: obj.valutaAvans === 'lei' ? obj.pretAvans : null,
       avansMembrii: obj.avansMembrii,
       priceAfterCompanySpendings: obj.priceWithCompanySpendings
     })
@@ -1054,7 +1084,8 @@ function setDownloadbleColumns () {
     { name: 'name', required: true, label: 'Nume', align: 'left', field: row => row.name, format: val => `${val}`},
     { name: 'euro', align: 'right', label: 'Euro', field: 'euro', format: val => val ? `${val} €` : '' },
     { name: 'lei', align: 'right', label: 'Lei', field: 'lei', format: val => val ? `${val} lei` : '' },
-    { name: 'avans', required: true, label: 'Pret avans', align: 'right', field: row => row.isEvent ? row.avans : row.totalAvans, format: (val) => val ? `${val} €` : ''},
+    { name: 'avansEuro', align: 'right', label: 'Avans €', field: row => row.isEvent ? row.avansEuro : row.totalAvansEuro, format: (val) => val ? `${val} €` : '' },
+    { name: 'avansLei', align: 'right', label: 'Avans lei', field: row => row.isEvent ? row.avansLei : row.totalAvansLei, format: (val) => val ? `${val} lei` : '' },
   ]
 }
 
