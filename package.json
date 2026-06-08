@@ -6,7 +6,7 @@
   "author": "catalinmuresian <82952859+catalinmuresian@users.noreply.github.com>",
   "private": true,
   "scripts": {
-    "dev": "quasar dev",
+    "dev": "quasar dev -m pwa",
     "build": "quasar build -m pwa",
     "test:scenarios": "node scripts/test-scenarios.mjs",
     "test:scenarios:update": "node scripts/test-scenarios.mjs --update"

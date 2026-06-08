@@ -17,7 +17,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SNAPSHOTS_PATH = join(__dirname, '../src/test/snapshots.json');
 const { default: scenarios } = await import('../src/test/testScenarios.mjs');
 const UPDATE = process.argv.includes('--update');
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8081';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080';
 
 const GREEN  = '\x1b[32m';
 const RED    = '\x1b[31m';

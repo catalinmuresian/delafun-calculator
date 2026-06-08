@@ -573,7 +573,7 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {date, exportFile, useQuasar} from "quasar";
 import { useStore } from 'vuex';
 const $q = useQuasar()
