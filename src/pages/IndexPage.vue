@@ -476,7 +476,7 @@
         hide-header
         hide-bottom
         bordered
-        :rows="rows"
+        :rows="tableRows"
         :columns="columns"
         :pagination="{ rowsPerPage: 0 }"
         row-key="name"
@@ -747,6 +747,7 @@ const totalSum = ref({
 })
 
 const calculHasMade = ref(false)
+const tableRows = computed(() => rows.map(r => ({...r})))
 
 function wrapCsvValue (val, formatFn, row) {
   let formatted = formatFn !== void 0
@@ -995,7 +996,6 @@ function calculate () {
 
   setDownloadbleRows()
   setDownloadbleColumns()
-
 }
 
 function _number (number) {
