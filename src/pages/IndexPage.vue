@@ -574,7 +574,10 @@
 <script setup>
 import {computed, onMounted, ref} from "vue";
 import {date, exportFile, useQuasar} from "quasar";
+import { useStore } from 'vuex';
 const $q = useQuasar()
+const store = useStore()
+const cursEuro = computed(() => store.state.moduleExample.cursEuro)
 
 const eventsExpansion = ref(true)
 const spendingsExpansion = ref(true)
@@ -848,8 +851,8 @@ function calculate () {
   else {
     const sum = totalPriceSpendingsLei - totalPriceEventsLei
     totalSumRemainingLei = 0
-    totalSumRemainingEuro = totalSumRemainingEuro - (sum / 5)
-    totalSum.value.totalSumaCheltuieliLeiSchimbat = sum / 5
+    totalSumRemainingEuro = totalSumRemainingEuro - (sum / cursEuro.value)
+    totalSum.value.totalSumaCheltuieliLeiSchimbat = sum / cursEuro.value
   }
 
   if (totalPriceEventsEuro > totalPriceSpendingsEuro) {
@@ -858,8 +861,8 @@ function calculate () {
   else {
     const sum = totalPriceSpendingsEuro - totalPriceEventsEuro
     totalSumRemainingEuro = 0
-    totalSumRemainingLei = totalSumRemainingLei - (sum * 5)
-    totalSum.value.totalSumaCheltuieliEuroSchimbat = sum * 5
+    totalSumRemainingLei = totalSumRemainingLei - (sum * cursEuro.value)
+    totalSum.value.totalSumaCheltuieliEuroSchimbat = sum * cursEuro.value
   }
 
   const catalinEuro = totalSumRemainingEuro * 0.13
@@ -951,12 +954,12 @@ function calculate () {
           else {
             o[valutaOpusa] =
               o[valutaOpusa] - (valutaAvans === 'euro'
-                ? ((avansPerMember - o[valutaAvans]) * 5)
-                : (avansPerMember - o[valutaAvans]) / 5)
+                ? ((avansPerMember - o[valutaAvans]) * cursEuro.value)
+                : (avansPerMember - o[valutaAvans]) / cursEuro.value)
 
             o[valutaAvans] = o[valutaAvans] - (avansPerMember - (avansPerMember - o[valutaAvans]))
           }
-          listAvans[o.name].push(valutaAvans === 'euro' ? avansPerMember * 1 : ((avansPerMember * 1) / 5))
+          listAvans[o.name].push(valutaAvans === 'euro' ? avansPerMember * 1 : ((avansPerMember * 1) / cursEuro.value))
         }
       })
     }
@@ -999,7 +1002,7 @@ function setDownloadbleRows () {
       lei: obj.currency === 'lei' ? obj.companyEvent ? obj.priceWithCompanySpendings : obj.value : '',
       currency: obj.currency,
       valutaAvans: obj.valutaAvans,
-      avans: obj.valutaAvans === '€' ? obj.pretAvans : obj.pretAvans / 5,
+      avans: obj.valutaAvans === '€' ? obj.pretAvans : obj.pretAvans / cursEuro.value,
       avansMembrii: obj.avansMembrii,
       priceAfterCompanySpendings: obj.priceWithCompanySpendings
     })
