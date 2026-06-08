@@ -826,7 +826,6 @@ function resetAll () {
   spendingsExpansion.value = false
 }
 function calculate () {
-  getResultsCalcul.value = true
   calculHasMade.value = true
   eventsExpansion.value = false
   spendingsExpansion.value = false
@@ -998,8 +997,12 @@ function calculate () {
 
   setDownloadbleRows()
   setDownloadbleColumns()
-  tableRows.value = rows.map(r => ({...r}))
-  calcKey.value++
+
+  setTimeout(() => {
+    tableRows.value = rows.map(r => ({...r}))
+    getResultsCalcul.value = true
+    calcKey.value++
+  }, 0)
 }
 
 function _number (number) {
