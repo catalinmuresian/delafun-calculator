@@ -472,6 +472,7 @@
         </template>
       </q-table>
       <q-table
+        :key="calcKey"
         flat
         hide-header
         hide-bottom
@@ -748,6 +749,7 @@ const totalSum = ref({
 
 const calculHasMade = ref(false)
 const tableRows = ref(rows.map(r => ({...r})))
+const calcKey = ref(0)
 
 function wrapCsvValue (val, formatFn, row) {
   let formatted = formatFn !== void 0
@@ -997,6 +999,7 @@ function calculate () {
   setDownloadbleRows()
   setDownloadbleColumns()
   tableRows.value = rows.map(r => ({...r}))
+  calcKey.value++
 }
 
 function _number (number) {
