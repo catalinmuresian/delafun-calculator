@@ -572,7 +572,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {date, exportFile, useQuasar} from "quasar";
 import { useStore } from 'vuex';
 const $q = useQuasar()
@@ -623,7 +623,7 @@ const columns = [
   { name: 'euro', align: 'right', label: 'Euro', field: 'euro', format: val => val ? `${val} €` : '' },
   { name: 'lei', label: 'Lei', field: 'lei', format: val => `${val} lei` },
 ]
-const rows = [
+const rows = reactive([
   {
     name: 'Catalin',
     id: 'catalin',
@@ -672,7 +672,7 @@ const rows = [
     totalAvans: null,
     status: true
   },
-]
+])
 const inputModal = ref('')
 const modalSettings = ref({
   events: {
