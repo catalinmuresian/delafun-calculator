@@ -600,6 +600,22 @@ const fileName = ref('')
 onMounted(() => {
   const today = new Date()
   fileName.value = `delaFun - ${date.formatDate(today, 'DD.MM.YYYY')}`
+
+  if (process.env.DEV) {
+    window.__runTestScenario = (scenario) => {
+      resetAll()
+      data.value.events = scenario.events.map(e => ({ ...e }))
+      data.value.spendings = scenario.spendings.map(sp => ({ ...sp }))
+      if (scenario.members) {
+        Object.keys(scenario.members).forEach(id => {
+          members.value[id] = scenario.members[id]
+        })
+      }
+      eventsExpansion.value = true
+      spendingsExpansion.value = true
+      calculate()
+    }
+  }
 })
 
 const columns = [

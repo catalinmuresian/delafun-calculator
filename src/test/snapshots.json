@@ -1,0 +1,207 @@
+[
+  {
+    "label": "Scenariu 1 - Basic",
+    "rows": [
+      {
+        "name": "Catalin",
+        "euro": "154 €",
+        "lei": "325 lei",
+        "avans": null
+      },
+      {
+        "name": "Vali",
+        "euro": "154 €",
+        "lei": "325 lei",
+        "avans": null
+      },
+      {
+        "name": "Ion",
+        "euro": "120 €",
+        "lei": "462 lei",
+        "avans": "100 €"
+      },
+      {
+        "name": "Sarpe",
+        "euro": "220 €",
+        "lei": "462 lei",
+        "avans": null
+      },
+      {
+        "name": "Tony",
+        "euro": "220 €",
+        "lei": "462 lei",
+        "avans": null
+      },
+      {
+        "name": "Radu",
+        "euro": "120 €",
+        "lei": "462 lei",
+        "avans": "100 €"
+      }
+    ]
+  },
+  {
+    "label": "Scenariu 2 - Complex mixt",
+    "rows": [
+      {
+        "name": "Catalin",
+        "euro": "190 €",
+        "lei": "549 lei",
+        "avans": "100 €"
+      },
+      {
+        "name": "Vali",
+        "euro": "190 €",
+        "lei": "549 lei",
+        "avans": "100 €"
+      },
+      {
+        "name": "Ion",
+        "euro": "313 €",
+        "lei": "781 lei",
+        "avans": "100 €"
+      },
+      {
+        "name": "Sarpe",
+        "euro": "413 €",
+        "lei": "281 lei",
+        "avans": "96 €"
+      },
+      {
+        "name": "Tony",
+        "euro": "413 €",
+        "lei": "281 lei",
+        "avans": "96 €"
+      },
+      {
+        "name": "Radu",
+        "euro": "413 €",
+        "lei": "281 lei",
+        "avans": "96 €"
+      }
+    ]
+  },
+  {
+    "label": "Scenariu 3 - 4 membrii (fara Sarpe, Tony)",
+    "rows": [
+      {
+        "name": "Catalin",
+        "euro": "112 €",
+        "lei": "882 lei",
+        "avans": "200 €"
+      },
+      {
+        "name": "Vali",
+        "euro": "120 €",
+        "lei": "1100 lei",
+        "avans": "150 €"
+      },
+      {
+        "name": "Ion",
+        "euro": "137 €",
+        "lei": "1372 lei",
+        "avans": "200 €"
+      },
+      {
+        "name": "Sarpe",
+        "euro": "0 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Tony",
+        "euro": "0 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Radu",
+        "euro": "337 €",
+        "lei": "1372 lei",
+        "avans": null
+      }
+    ]
+  },
+  {
+    "label": "Scenariu 4 - Conversie lei→euro + 2 absenti",
+    "rows": [
+      {
+        "name": "Catalin",
+        "euro": "133 €",
+        "lei": "0 lei",
+        "avans": "50 €"
+      },
+      {
+        "name": "Vali",
+        "euro": "133 €",
+        "lei": "0 lei",
+        "avans": "50 €"
+      },
+      {
+        "name": "Ion",
+        "euro": "171 €",
+        "lei": "0 lei",
+        "avans": "58 €"
+      },
+      {
+        "name": "Sarpe",
+        "euro": "229 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Tony",
+        "euro": "0 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Radu",
+        "euro": "0 €",
+        "lei": "0 lei",
+        "avans": null
+      }
+    ]
+  },
+  {
+    "label": "Scenariu 5 - Conversie euro→lei + 1 absent",
+    "rows": [
+      {
+        "name": "Catalin",
+        "euro": "0 €",
+        "lei": "400 lei",
+        "avans": "77 €"
+      },
+      {
+        "name": "Vali",
+        "euro": "0 €",
+        "lei": "400 lei",
+        "avans": "77 €"
+      },
+      {
+        "name": "Ion",
+        "euro": "0 €",
+        "lei": "413 lei",
+        "avans": "125 €"
+      },
+      {
+        "name": "Sarpe",
+        "euro": "0 €",
+        "lei": "1063 lei",
+        "avans": null
+      },
+      {
+        "name": "Tony",
+        "euro": "0 €",
+        "lei": "0 lei",
+        "avans": null
+      },
+      {
+        "name": "Radu",
+        "euro": "0 €",
+        "lei": "413 lei",
+        "avans": "125 €"
+      }
+    ]
+  }
+]
