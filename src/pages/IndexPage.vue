@@ -524,7 +524,7 @@
                  style="display: flex;align-items: center;gap: 10px;padding: 6px 4px;">
               <span style="font-size: 13px;color: #888;">{{ sp.name || `#${index + 1}` }}</span>
               <span> - </span>
-              <span style="font-size: 13px;font-weight: 500;">{{ `${sp.value} ${sp.currency}` }}</span>
+              <span style="font-size: 13px;font-weight: 400;">{{ `${sp.value} ${sp.currency}` }}</span>
             </div>
             <div style="border-top: 1px solid #e0e0e0;" />
           </div>
