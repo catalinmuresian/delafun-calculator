@@ -4,7 +4,7 @@
 // kept only as a fallback, returned (with stale: true) when BNR does not answer.
 require_once __DIR__ . '/_lib.php';
 
-if (!calc_device($this)) return calc_fail($this, 401, 'device_not_paired');
+if ($refused = calc_guard($this)) return $refused;
 
 const CALC_BNR_URL = 'https://curs.bnr.ro/nbrfxrates.xml';
 

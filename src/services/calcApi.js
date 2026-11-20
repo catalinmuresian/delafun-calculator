@@ -35,7 +35,9 @@ async function request (path, { method = 'GET', body, query } = {}) {
   try { data = await res.json() } catch (e) { /* empty or non-JSON body */ }
 
   if (!res.ok) {
-    if (res.status === 401) setPairedFlag(false)
+    if (res.status === 401 && data?.error === 'device_not_paired') setPairedFlag(false)
+    // The biometric session ended: the app shows its unlock screen.
+    if (res.status === 401 && data?.error === 'locked') window.dispatchEvent(new Event('calc-locked'))
     throw new CalcApiError(res.status, data?.error)
   }
   return data
@@ -49,15 +51,16 @@ function setPairedFlag (on) {
   try { on ? localStorage.setItem(PAIRED_FLAG, '1') : localStorage.removeItem(PAIRED_FLAG) } catch (e) { /* storage blocked */ }
 }
 
-// 'paired' | 'locked' | 'offline' (no network, but this device was paired before)
+// 'locked' (not paired) | 'register' (paired, no biometrics yet) | 'biolock' (paired, ask biometrics)
+// | 'biolock-offline' (no network, but this device was paired before)
 export async function checkDevice () {
   try {
-    await request('/me')
+    const me = await request('/me')
     setPairedFlag(true)
-    return 'paired'
+    return me.registered ? 'biolock' : 'register'
   } catch (e) {
     if (e instanceof CalcApiError) return 'locked'
-    return getPairedFlag() ? 'offline' : 'locked'
+    return getPairedFlag() ? 'biolock-offline' : 'locked'
   }
 }
 
@@ -73,3 +76,8 @@ export const saveCalculation = calc => request('/calculations', { method: 'POST'
 export const deleteCalculation = id => request('/delete', { method: 'POST', body: { id } })
 export const getReport = (from, to) => request('/report', { query: { ...(from ? { from } : {}), ...(to ? { to } : {}) } })
 export const getCurs = () => request('/curs')
+
+// Biometric unlock (see src/services/biometric.js)
+export const getChallenge = () => request('/challenge', { method: 'POST', body: {} })
+export const registerCredential = data => request('/register', { method: 'POST', body: data })
+export const unlockWithCredential = data => request('/unlock', { method: 'POST', body: data })

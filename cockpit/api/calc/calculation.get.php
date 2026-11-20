@@ -2,7 +2,7 @@
 // GET /cockpit/api/calc/calculation?id=… — one saved calculation, with all its details.
 require_once __DIR__ . '/_lib.php';
 
-if (!calc_device($this)) return calc_fail($this, 401, 'device_not_paired');
+if ($refused = calc_guard($this)) return $refused;
 
 $id = (string) $this->param('id', '');
 if (!preg_match('/^[a-zA-Z0-9]{8,40}$/', $id)) return calc_fail($this, 400, 'bad_id');

@@ -3,7 +3,7 @@
 // for the calendar's marked days and the list of a day.
 require_once __DIR__ . '/_lib.php';
 
-if (!calc_device($this)) return calc_fail($this, 401, 'device_not_paired');
+if ($refused = calc_guard($this)) return $refused;
 
 $month = (string) $this->param('month', '');
 if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)) return calc_fail($this, 400, 'bad_month');

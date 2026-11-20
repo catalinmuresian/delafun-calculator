@@ -69,6 +69,17 @@ $models = [
             $field('paired_at', 'text', ['label' => 'Imperecheat la']),
             $field('last_seen', 'text', ['label' => 'Ultima folosire']),
             $field('user_agent', 'text', ['label' => 'Browser']),
+            // Biometric unlock (WebAuthn): the phone's public key; the private one stays in its secure chip.
+            $field('webauthn_cred_id', 'text', ['label' => 'Biometrie: credential id',
+                'info' => 'Golit: telefonul isi inregistreaza din nou Face ID / amprenta la urmatoarea deschidere']),
+            $field('webauthn_pubkey', 'textarea', ['label' => 'Biometrie: cheie publica']),
+            $field('webauthn_alg', 'number', ['label' => 'Biometrie: algoritm']),
+            $field('webauthn_counter', 'number', ['label' => 'Biometrie: contor']),
+            $field('webauthn_origin', 'text', ['label' => 'Biometrie: origine']),
+            $field('challenge_hash', 'text', ['label' => 'Provocare (SHA-256)']),
+            $field('challenge_exp', 'number', ['label' => 'Provocare expira']),
+            $field('unlock_hash', 'text', ['label' => 'Sesiune deblocata (SHA-256)']),
+            $field('unlock_exp', 'number', ['label' => 'Sesiune expira']),
         ],
     ],
 ];

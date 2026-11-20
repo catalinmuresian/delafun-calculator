@@ -2,8 +2,8 @@
 // POST /cockpit/api/calc/calculations — saves a calculation (a snapshot of the results) on a date.
 require_once __DIR__ . '/_lib.php';
 
+if ($refused = calc_guard($this)) return $refused;
 $device = calc_device($this);
-if (!$device) return calc_fail($this, 401, 'device_not_paired');
 
 $body = calc_body($this);
 if (!$body) return calc_fail($this, 400, 'bad_request');

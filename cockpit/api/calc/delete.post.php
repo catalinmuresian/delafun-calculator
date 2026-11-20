@@ -2,7 +2,7 @@
 // POST /cockpit/api/calc/delete {id} — deletes a saved calculation.
 require_once __DIR__ . '/_lib.php';
 
-if (!calc_device($this)) return calc_fail($this, 401, 'device_not_paired');
+if ($refused = calc_guard($this)) return $refused;
 
 $body = calc_body($this);
 $id = (string) ($body['id'] ?? '');
