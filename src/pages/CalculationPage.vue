@@ -1,5 +1,5 @@
 <template>
-  <q-page class="calc-page">
+  <q-page class="calc-page calc-page--plain">
     <q-dialog v-model="confirmDelete" persistent>
       <q-card class="dlg dlg--confirm">
         <q-card-section class="dlg__confirm-body">

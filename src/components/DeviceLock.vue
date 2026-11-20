@@ -59,9 +59,10 @@ async function submit () {
 <style lang="scss">
 .device-lock {
   min-height: calc(100vh - 60px);
+  min-height: calc(100dvh - 60px);
   display: grid;
   place-items: center;
-  padding: 24px 16px;
+  padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
 
   &__card {
     width: 100%;

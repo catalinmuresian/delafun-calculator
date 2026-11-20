@@ -1,5 +1,5 @@
 <template>
-  <q-page class="calc-page">
+  <q-page class="calc-page calc-page--plain">
     <div class="calc-content">
       <section class="panel panel--members">
         <div class="panel__header">
@@ -61,10 +61,6 @@
                :disable="!reportRows.length" :loading="exporting" @click="exportExcel" />
         <q-btn outline no-caps icon="download" label="CSV" color="primary"
                :disable="!reportRows.length" @click="exportCsv" />
-      </div>
-      <div class="report-note">
-        Toate sumele sunt in euro; sumele in lei sunt transformate la cursul 1 € = {{ cursEuro }} lei.
-        Evenimente € si Cheltuieli €: partea fiecaruia din calculele la care a participat.
       </div>
     </div>
   </q-page>
@@ -271,5 +267,4 @@ async function exportExcel () {
   gap: 10px;
   .q-btn { flex: 1; height: 44px; border-radius: 12px; font-weight: 600; }
 }
-.report-note { font-size: 12px; color: $muted; padding: 0 4px; }
 </style>

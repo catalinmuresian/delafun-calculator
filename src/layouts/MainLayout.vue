@@ -17,15 +17,31 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { useStore } from 'vuex'
 import NavBar from '../components/NavBar'
 import DeviceLock from '../components/DeviceLock.vue'
 import { checkDevice } from '../services/calcApi'
+import { keepScreenOn } from '../services/wakeLock'
+import { startCurs } from '../services/curs'
+
+const store = useStore()
 
 // 'checking' | 'paired' | 'offline' | 'locked'
 const state = ref('checking')
 
+// The BNR rate once the device is let in (also right after pairing).
+let cursStarted = false
+watch(state, value => {
+  if ((value === 'paired' || value === 'offline') && !cursStarted) {
+    cursStarted = true
+    startCurs(store)
+  }
+})
+
 onMounted(async () => {
+  // The screen stays on as long as the app is open.
+  keepScreenOn()
   state.value = await checkDevice()
 })
 </script>

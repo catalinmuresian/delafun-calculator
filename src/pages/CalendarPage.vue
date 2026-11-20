@@ -1,5 +1,5 @@
 <template>
-  <q-page class="calc-page">
+  <q-page class="calc-page calc-page--plain">
     <div class="calc-content">
       <section class="panel panel--members">
         <div class="panel__header">

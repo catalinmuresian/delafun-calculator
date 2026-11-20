@@ -4,7 +4,11 @@
 
 .calc-page {
   min-height: unset !important;
-  padding-bottom: 110px;
+  // Room for the fixed action bar and, on phones, the home indicator under it.
+  padding-bottom: calc(110px + env(safe-area-inset-bottom));
+
+  // Pages without the action bar (calendar, calculation, report).
+  &--plain { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
 }
 
 .calc-content {
@@ -453,4 +457,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+// Notifications sit above the action bar and the phone's home indicator.
+.q-notifications__list--bottom {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
