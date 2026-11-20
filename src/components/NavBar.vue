@@ -1,8 +1,9 @@
 <template>
   <div class="nav-bar">
     <q-dialog v-model="modalInfo">
-      <q-card style="min-width: 280px">
+      <q-card class="rate-dialog">
         <q-card-section class="column items-center">
+          <div class="rate-dialog__title">Curs valutar</div>
           <q-input
             class="full-width"
             v-model.number="cursEuroLocal"
@@ -12,8 +13,8 @@
             outlined
             @wheel="$event.target.blur()"
           />
-          <q-btn class="q-mt-md full-width"
-                 filled
+          <q-btn class="q-mt-md full-width rate-dialog__save"
+                 unelevated
                  label="Salveaza"
                  no-caps
                  color="positive"
@@ -26,35 +27,28 @@
       </q-card>
     </q-dialog>
 
-    <div class="flex justify-between items-center" style="padding: 5px 16px;background: #ACD0DB">
+    <header class="nav-bar__inner">
       <img
-        style="max-width: 100px;"
+        class="nav-bar__logo"
         src="../assets/delafun__1_-removebg-preview.png"
         alt="logo-delafun">
-      <div class="logo-info flex justify-center items-center" style="gap: 10px">
-        <q-icon class="cursor-pointer"
-                @click="openSettings"
-                size="25px"
-                name="settings"
-                color="white"/>
-
-        <img
-          style="width: 100%;max-width: 45px;"
-          src="../assets/calculator.png"
-          alt="calc-logo">
-      </div>
-
-    </div>
+      <button class="nav-bar__rate" type="button" @click="openSettings">
+        <q-icon name="currency_exchange" size="16px" />
+        <span>1 € = <b>{{ cursEuro }}</b> lei</span>
+        <q-icon name="settings" size="16px" class="nav-bar__rate-gear" />
+      </button>
+    </header>
   </div>
 </template>
 
 <script setup>
 import { date } from 'quasar'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()
 const modalInfo = ref(false)
+const cursEuro = computed(() => store.state.moduleExample.cursEuro)
 const cursEuroLocal = ref(null)
 
 function openSettings () {
@@ -68,6 +62,46 @@ function saveCursEuro () {
 </script>
 
 <style lang="scss">
+.nav-bar {
+  background: linear-gradient(135deg, #acd0db 0%, #8fbfcd 100%);
+  box-shadow: 0 2px 12px rgba(20, 50, 60, .12);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 
+  &__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: calc(6px + env(safe-area-inset-top)) 16px 6px;
+  }
+  &__logo { max-width: 96px; display: block; }
+  &__rate {
+    all: unset;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: #1f2d33;
+    background: rgba(255, 255, 255, .75);
+    box-shadow: 0 1px 3px rgba(20, 50, 60, .12);
 
+    &:focus-visible { outline: 2px solid #fff; }
+  }
+  &__rate-gear { color: #6b7c85; }
+}
+
+.rate-dialog {
+  width: 300px;
+  max-width: 92vw;
+  border-radius: 20px !important;
+
+  &__title { font-size: 17px; font-weight: 600; margin-bottom: 14px; align-self: flex-start; }
+  &__save { border-radius: 12px; height: 42px; font-weight: 600; }
+}
 </style>

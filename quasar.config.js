@@ -55,9 +55,8 @@ module.exports = configure(function (ctx) {
 
       // transpile: false,
       // publicPath: '/',
-      publicPath: process.env.NODE_ENV === 'production'
-        ? '/delafun-calculator/'
-        : '/',
+      // Served at the root of calc.cmdev.ro (VPS, /var/www/delafun-calculator/public_html).
+      publicPath: '/',
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
       // (from node_modules, which are by default not transpiled).

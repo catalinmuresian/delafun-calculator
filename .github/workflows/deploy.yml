@@ -1,0 +1,48 @@
+name: Deploy CALCULATOR to VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+
+  # Allows you to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+# Allow only one deployment at a time; a newer one waits for the running one.
+concurrency:
+  group: "deploy-delafun-calculator"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Quasar PWA
+        run: npx quasar build -m pwa
+
+      # Static app: Nginx serves these files directly, no pm2 / Node on the server.
+      - name: Deploy dist/pwa to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "dist/pwa/*"
+          target: "/var/www/delafun-calculator/public_html/"
+          strip_components: 2
+          rm: true

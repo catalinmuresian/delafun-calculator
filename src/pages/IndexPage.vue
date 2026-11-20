@@ -1,591 +1,483 @@
 <template>
-  <q-page style="min-height: unset;padding-bottom: 60px">
+  <q-page class="calc-page">
     <q-dialog v-model="confirmDeleteEvent" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <span class="q-ml-sm">Esti sigur ca vrei sa stergi acest event ?</span>
+      <q-card class="dlg dlg--confirm">
+        <q-card-section class="dlg__confirm-body">
+          <q-avatar icon="delete_outline" color="red-1" text-color="negative" />
+          <span>Esti sigur ca vrei sa stergi acest event ?</span>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat
-                 label="Nu"
-                 no-caps
-                 color="grey"
-                 v-close-popup />
-          <q-btn flat
+          <q-btn flat label="Nu" no-caps color="grey-8" v-close-popup />
+          <q-btn unelevated
                  no-caps
                  @click="handleDelete(modalSettings.events.index, 'events')"
-                 label="Da"
-                 color="info"
+                 label="Da, sterge"
+                 color="negative"
                  v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
     <q-dialog v-model="confirmDeleteSpending" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <span class="q-ml-sm">Esti sigur ca vrei sa stergi aceasta cheltuiala ?</span>
+      <q-card class="dlg dlg--confirm">
+        <q-card-section class="dlg__confirm-body">
+          <q-avatar icon="delete_outline" color="red-1" text-color="negative" />
+          <span>Esti sigur ca vrei sa stergi aceasta cheltuiala ?</span>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat
-                 label="Nu"
-                 no-caps
-                 color="grey"
-                 v-close-popup />
-          <q-btn flat
+          <q-btn flat label="Nu" no-caps color="grey-8" v-close-popup />
+          <q-btn unelevated
                  no-caps
                  @click="handleDelete(modalSettings.spendings.index, 'spendings')"
-                 label="Da"
-                 color="info"
+                 label="Da, sterge"
+                 color="negative"
                  v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
     <q-dialog v-model="confirmReset" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <span class="q-ml-sm">Esti sigur ca vrei sa resetezi totul ?</span>
+      <q-card class="dlg dlg--confirm">
+        <q-card-section class="dlg__confirm-body">
+          <q-avatar icon="restart_alt" color="orange-1" text-color="orange-9" />
+          <span>Esti sigur ca vrei sa resetezi totul ?</span>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat
-                 label="Nu"
-                 no-caps
-                 color="grey"
-                 v-close-popup />
-          <q-btn flat
+          <q-btn flat label="Nu" no-caps color="grey-8" v-close-popup />
+          <q-btn unelevated
                  no-caps
                  @click="resetAll"
-                 label="Da"
-                 color="info"
+                 label="Da, reseteaza"
+                 color="orange-9"
                  v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
     <q-dialog v-model="confirmDownload" persistent>
-      <q-card>
-        <q-card-section class="row items-center"
-                        style="display: flex;flex-direction: column;align-items: flex-start;gap: 10px">
+      <q-card class="dlg dlg--confirm">
+        <q-card-section class="dlg__confirm-body">
+          <q-avatar icon="download" color="purple-1" text-color="purple-8" />
           <span>Esti sigur ca vrei sa downloadezi fisierul ?</span>
-          <div class="filename full-width">
-
-            <q-input label="Nume fisier"
-                     dense
-                     v-model="fileName"
-                     flat
-            />
-          </div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <q-input label="Nume fisier"
+                   dense
+                   outlined
+                   suffix=".csv"
+                   v-model="fileName" />
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat
-                 label="Nu"
-                 no-caps
-                 color="grey"
-                 v-close-popup />
-          <q-btn flat
+          <q-btn flat label="Nu" no-caps color="grey-8" v-close-popup />
+          <q-btn unelevated
                  no-caps
                  @click="exportTable()"
-                 label="Da"
-                 color="info"
+                 label="Descarca"
+                 icon="download"
+                 color="purple-7"
                  v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="modalSettings.events.openModal" persistent>
-      <q-card style="width: 100%">
-        <q-card-section>
-          <div style="display: flex;width: 100%;justify-content: space-between;align-items: center;">
-            <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">
+    <q-dialog v-model="modalSettings.events.openModal" persistent position="bottom">
+      <q-card class="dlg dlg--sheet">
+        <div class="dlg__header">
+          <div>
+            <div class="dlg__eyebrow">
               {{ modalSettings.events.input.length
                 ? `${modalSettings.events.input}`
-                : `#${modalSettings.events.index + 1}`}}
-            </span>
-            <q-btn
-              v-close-popup
-              icon="close"
-              dense
-              color="grey"
-              flat>
-            </q-btn>
+                : `Eveniment #${modalSettings.events.index + 1}`}}
+            </div>
+            <div class="dlg__title">Setari eveniment</div>
           </div>
-          <div class="text-h6">Setari eveniment</div>
-        </q-card-section>
-        <q-card-section class="q-pt-none">
-          <span>Nume</span>
-          <q-input dense
+          <q-btn v-close-popup icon="close" round dense flat color="grey-7" />
+        </div>
+
+        <q-card-section class="dlg__body">
+          <q-input outlined
+                   dense
                    autofocus
+                   label="Nume"
                    v-model="inputModal"
                    @update:model-value="newValue => handleNumeEvenimentInput(newValue)"
                    @keyup.enter="modalSettings.events.openModal = false" />
-        </q-card-section>
-        <q-card-section style="display: flex;gap: 5px;align-items: flex-start;">
-          <q-checkbox dense color="orange"
-                      v-model="checkboxIfFirma" />
-          Cheltuieli firma 11%
-        </q-card-section>
-        <q-card-section style="display: flex;gap: 5px;align-items: flex-start;flex-direction: column">
-          <div style="display: flex;align-items: flex-start;gap: 5px">
-            <q-checkbox dense color="positive"
-                        v-model="checkboxIfAvans" />
-            Avans
+
+          <div class="field">
+            <div class="field__label">Moneda</div>
+            <q-btn-toggle v-model="valuta"
+                          class="currency-toggle"
+                          no-caps
+                          unelevated
+                          toggle-color="primary"
+                          color="grey-2"
+                          text-color="grey-9"
+                          :options="currencyToggleOptions" />
           </div>
-          <div
-            v-show="checkboxIfAvans"
-            style="display: flex;gap: 10px;margin-top: 5px;">
-            <q-input
-              class="input-avans"
-              placeholder="Pret avans"
-              style="width: 110px"
-              :class="priceAvans ? 'input-price-right' : 'input-price-left'"
-              dense
-              outlined
-              type="number"
-              pattern="\d*"
-              @wheel="stopScroll($event)"
-              v-model="priceAvans"/>
-            <q-select class="currency-select"
-                      behavior="menu"
-                      style="width: 100%;max-width: 75px;"
-                      outlined
-                      v-model="currencyAvans"
+
+          <div class="option-tile" :class="{ 'option-tile--on': checkboxIfFirma }">
+            <q-toggle dense color="orange-8" v-model="checkboxIfFirma" />
+            <div class="option-tile__text" @click="checkboxIfFirma = !checkboxIfFirma">
+              <div class="option-tile__title">Cheltuieli firma 11%</div>
+              <div class="option-tile__hint">Se scade 11% din pretul evenimentului</div>
+            </div>
+          </div>
+
+          <div class="avans-group">
+            <div class="option-tile" :class="{ 'option-tile--on': checkboxIfAvans }">
+              <q-toggle dense color="positive" v-model="checkboxIfAvans" />
+              <div class="option-tile__text" @click="checkboxIfAvans = !checkboxIfAvans">
+                <div class="option-tile__title">Avans</div>
+                <div class="option-tile__hint">Suma deja primita de unii membri</div>
+              </div>
+            </div>
+
+            <div class="collapse"
+                 :class="{ 'collapse--open': checkboxIfAvans }"
+                 :inert="!checkboxIfAvans">
+              <div class="collapse__inner">
+                <div class="avans-box">
+                  <div class="avans-box__row">
+                    <q-input
+                      class="input-avans col"
+                      label="Pret avans"
+                      :class="priceAvans ? 'input-price-right' : 'input-price-left'"
                       dense
-                      :options="optionsValuta">
-            </q-select>
+                      outlined
+                      type="number"
+                      pattern="\d*"
+                      @wheel="stopScroll($event)"
+                      v-model="priceAvans"/>
+                    <q-btn-toggle v-model="currencyAvans"
+                                  class="currency-toggle"
+                                  no-caps
+                                  unelevated
+                                  toggle-color="positive"
+                                  color="grey-2"
+                                  text-color="grey-9"
+                                  :options="currencyToggleOptions" />
+                  </div>
+                  <div class="field__label q-mt-sm">Membrii care au primit avans</div>
+                  <div class="chip-group">
+                    <q-chip
+                      v-for="membru in optionsAvans"
+                      :key="membru"
+                      clickable
+                      :selected="modelMultiple.includes(membru)"
+                      @click="toggleAvansMember(membru)"
+                      :color="modelMultiple.includes(membru) ? 'positive' : 'grey-2'"
+                      :text-color="modelMultiple.includes(membru) ? 'white' : 'grey-9'">
+                      {{ membru }}
+                    </q-chip>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
-          <q-select
-            style="min-width: 200px;"
-            v-show="checkboxIfAvans"
-            outlined
-            behavior="menu"
-            dense
-            v-model="modelMultiple"
-            multiple
-            :options="optionsAvans"
-            use-chips
-            label="Selecteaza membrii"
-          />
-        </q-card-section>
-        <q-card-section>
-          <span style="margin-bottom: 6px;display: block;">Selecteaza moneda</span>
-          <q-select class="currency-select"
-                    behavior="menu"
-                    style="width: 100%;max-width: 75px;"
-                    outlined
-                    v-model="valuta"
-                    dense
-                    :options="optionsValuta">
-          </q-select>
         </q-card-section>
 
-        <q-card-actions align="between"
-                        class="text-primary">
+        <q-card-actions class="dlg__actions">
           <q-btn flat
                  label="Sterge"
+                 icon="delete_outline"
                  color="negative"
                  no-caps
                  @click="confirmDeleteEvent = true" />
-          <q-btn flat label="Salveaza"
+          <q-space />
+          <q-btn unelevated
+                 label="Salveaza"
+                 color="primary"
                  no-caps
+                 class="dlg__save"
                  type="submit"
                  @click="handleSaveModalInput(modalSettings.events.index, 'events', valuta)"
                  v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="modalSettings.spendings.openModal" persistent>
-      <q-card style="width: 100%">
-        <q-card-section>
-          <div style="display: flex;width: 100%;justify-content: space-between;align-items: center;">
-            <span style="color: grey;font-size: 12px;margin-bottom: 5px;text-transform: capitalize">{{ modalSettings.spendings.input.length ? `${modalSettings.spendings.input}`: `#${modalSettings.spendings.index + 1}`}}</span>
-            <q-btn
-              v-close-popup
-              icon="close"
-              dense
-              color="grey"
-              flat>
-              </q-btn>
+    <q-dialog v-model="modalSettings.spendings.openModal" persistent position="bottom">
+      <q-card class="dlg dlg--sheet">
+        <div class="dlg__header">
+          <div>
+            <div class="dlg__eyebrow">
+              {{ modalSettings.spendings.input.length
+                ? `${modalSettings.spendings.input}`
+                : `Cheltuiala #${modalSettings.spendings.index + 1}`}}
+            </div>
+            <div class="dlg__title">Setari cheltuiala</div>
           </div>
-          <div style="font-size: 16px">Setari cheltuiala</div>
-        </q-card-section>
+          <q-btn v-close-popup icon="close" round dense flat color="grey-7" />
+        </div>
 
-        <q-card-section class="q-pt-none">
-          <span>Nume</span>
-          <q-input dense
+        <q-card-section class="dlg__body">
+          <q-input outlined
+                   dense
                    autofocus
+                   label="Nume"
                    v-model="inputModal"
                    @update:model-value="newValue => handleNumeSpendingInput(newValue)"
                    @keyup.enter="modalSettings.spendings.openModal = false" />
-        </q-card-section>
-        <q-card-section>
-          <span style="margin-bottom: 6px;display: block;">Selecteaza moneda</span>
-          <q-select  style="width: 100%;max-width: 85px;"
-                     outlined
-                     behavior="menu"
-                     v-model="valuta"
-                     dense :options="optionsValuta">
-          </q-select>
+          <div class="field">
+            <div class="field__label">Moneda</div>
+            <q-btn-toggle v-model="valuta"
+                          class="currency-toggle"
+                          no-caps
+                          unelevated
+                          toggle-color="primary"
+                          color="grey-2"
+                          text-color="grey-9"
+                          :options="currencyToggleOptions" />
+          </div>
         </q-card-section>
 
-        <q-card-actions align="between" class="text-primary">
+        <q-card-actions class="dlg__actions">
           <q-btn flat
                  label="Sterge"
+                 icon="delete_outline"
                  no-caps
                  color="negative"
                  @click="confirmDeleteSpending = true"/>
-          <q-btn flat label="Salveaza" no-caps @click="handleSaveModalInput(modalSettings.spendings.index, 'spendings', valuta)" v-close-popup />
+          <q-space />
+          <q-btn unelevated
+                 label="Salveaza"
+                 color="primary"
+                 no-caps
+                 class="dlg__save"
+                 @click="handleSaveModalInput(modalSettings.spendings.index, 'spendings', valuta)"
+                 v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <q-expansion-item
-      v-model="eventsExpansion">
-      <template v-slot:header>
-        <q-item-section>
-          <div>
-            <h6 style="margin: 0;position: relative;display: inline">Evenimente
-              <q-badge v-if="data.events.length"
-                       style="right: -20px;font-weight: 500"
-                       rounded
-                       floating
-                       color="positive"
-                       :label="data.events?.length" />
-            </h6>
-          </div>
-        </q-item-section>
-      </template>
-      <q-card>
-        <q-card-section style="padding-top: 0;">
-          <div style="display: flex;justify-content: flex-end">
-            <q-btn
-              style="margin-bottom: 5px;"
-              dense
-              no-caps
-              flat
-              @click="handleAdd('events')"
-              color="info" label="Adauga eveniment" icon="add" />
-          </div>
-          <div style="display: flex;flex-direction: column;gap: 10px;">
-            <div
-              v-for="({value,focus, name, currency, companyEvent, priceWithCompanySpendings, ifAvans, avansMembrii, pretAvans, valutaAvans}, index) in data.events">
-              <label
-                style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">
-                {{ `Eveniment ${name.length ? `- ${name}` : `#${index + 1}`}`}} <q-icon
-                @click="openModal(index, name, 'events', currency, companyEvent, ifAvans, avansMembrii, pretAvans, valutaAvans)"
-                size="22px"
-                color="grey"
-                style="cursor: pointer" name="settings"/>
-              </label>
-              <div style="display: flex;gap: 15px;align-items: center">
-                <div style="display: flex;">
-                  <q-input
-                    style="width: 100px"
-                    class="input-events-spendings"
-                    dense
-                    :suffix="currency"
-                    @blur="blurFunc(index, 'events')"
-                    @focus="focusButtonFunc(index, 'events')"
-                    :outlined="focus"
-                    :filled="!focus"
-                    type="number"
-                    pattern="\d*"
-                    @wheel="stopScroll($event)"
-                    @update:model-value="newValue => handleInput(index, newValue, 'events')"
-                    :model-value="value"/>
-                </div>
-                <div v-if="companyEvent"
-                      style="display: flex;align-items: flex-start;gap: 3px;">
-                  <q-icon size="18px"
-                          color="orange"
-                          name="info"/>
-                  <div style="display: flex;flex-direction: column;padding-top: 1px">
-                    <span style="font-size: 10px;color: grey;font-weight: 500;">- 11% Firma</span>
-                    <span style="font-size: 14px;color: black;font-weight: 500;">{{ `${priceWithCompanySpendings} ${currency}` }}</span>
-                  </div>
-                </div>
-                <div v-if="ifAvans"
-                      style="display: flex;align-items: flex-start;gap: 3px;">
-                  <q-icon size="18px"
-                          color="green"
-                          name="info"/>
-                  <div style="display: flex;flex-direction: column;padding-top: 1px">
-                    <span style="font-size: 10px;color: grey;font-weight: 500;">{{ `Avans - ${pretAvans} ${valutaAvans}`}}</span>
-                    <div style="font-size: 14px;color: black;font-weight: 500;display: flex;gap: 5px;flex-wrap: wrap;">
-                      <span v-for="(membru, index) in avansMembrii">{{ `${membru}${index + 1 !== avansMembrii.length ? ',' : ''}` }}
-                        </span>
-                    </div>
-                  </div>
-                </div>
+    <div class="calc-content">
+      <!-- Evenimente -->
+      <section class="panel panel--events">
+        <div class="panel__header">
+          <div class="panel__head">
+            <div class="panel__icon"><q-icon name="celebration" size="20px" /></div>
+            <div class="panel__titles">
+              <div class="panel__title">
+                Evenimente
+                <span v-if="data.events.length" class="panel__count">{{ data.events?.length }}</span>
               </div>
+              <div class="panel__subtitle">{{ totalsLabel(data.events, true) || 'Niciun eveniment adaugat' }}</div>
             </div>
           </div>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
-    <q-expansion-item
-      v-model="spendingsExpansion">
-      <template v-slot:header>
-        <q-item-section>
-          <div>
-            <h6 style="margin: 0;position: relative;display: inline">Cheltuieli
-              <q-badge v-if="data.spendings.length"
-                       style="right: -20px;font-weight: 500" rounded floating color="negative"
-                       :label="data.spendings?.length" />
-            </h6>
-          </div>
-        </q-item-section>
-      </template>
-      <q-card>
-        <q-card-section style="padding-top: 0;">
-          <div style="display: flex;justify-content: flex-end">
-            <q-btn
-              style="margin-bottom: 5px;"
-              dense
-              no-caps
-              flat
-              @click="handleAdd('spendings')"
-              color="info" label="Adauga cheltuiala" icon="add" />
-          </div>
-          <div style="display: flex;flex-direction: column;gap: 10px;">
-            <div
-              v-for="({value,focus, name, currency}, index) in data.spendings">
-              <label style="margin-bottom: 2px;display: flex;align-items: center;gap: 5px">{{ `Cheltuiala ${name.length ? `- ${name}` : `#${index + 1}`}`}}
-                <q-icon
-                  @click="openModal(index, name, 'spendings', currency)"
-                  size="22px"
-                  color="grey"
-                  style="cursor: pointer"
-                  name="settings"/>
-              </label>
+        </div>
+        <div class="panel__body">
+          <div
+            class="entry"
+            v-for="({value,focus, name, currency, companyEvent, priceWithCompanySpendings, ifAvans, avansMembrii, pretAvans, valutaAvans}, index) in data.events">
+            <div class="entry__top">
+              <button class="entry__name"
+                      type="button"
+                      @click="openModal(index, name, 'events', currency, companyEvent, ifAvans, avansMembrii, pretAvans, valutaAvans)">
+                <span class="entry__index">{{ index + 1 }}</span>
+                <span class="ellipsis">{{ name.length ? name : `Eveniment #${index + 1}` }}</span>
+                <q-icon name="tune" size="18px" class="entry__edit" />
+              </button>
               <q-input
-                class="input-events-spendings"
-                style="width: 100px;"
+                class="input-events-spendings entry__input"
                 dense
+                outlined
+                :suffix="currency"
+                placeholder="0"
+                @blur="blurFunc(index, 'events')"
+                @focus="focusButtonFunc(index, 'events')"
+                :class="{ 'entry__input--focus': focus }"
+                type="number"
+                pattern="\d*"
+                @wheel="stopScroll($event)"
+                @update:model-value="newValue => handleInput(index, newValue, 'events')"
+                :model-value="value"/>
+            </div>
+            <div v-if="companyEvent || ifAvans" class="entry__tags">
+              <span v-if="companyEvent" class="tag tag--orange">
+                <q-icon name="business" size="14px" />
+                -11% firma · <b>{{ `${formatNumber(priceWithCompanySpendings)} ${currency}` }}</b>
+              </span>
+              <span v-if="ifAvans" class="tag tag--green">
+                <q-icon name="payments" size="14px" />
+                Avans {{ `${pretAvans} ${valutaAvans}` }} · <b>{{ avansMembrii.join(', ') }}</b>
+              </span>
+            </div>
+          </div>
+          <q-btn
+            class="add-btn"
+            no-caps
+            unelevated
+            @click="handleAdd('events')"
+            label="Adauga eveniment" icon="add" />
+        </div>
+      </section>
+
+      <!-- Cheltuieli -->
+      <section class="panel panel--spendings">
+        <div class="panel__header">
+          <div class="panel__head">
+            <div class="panel__icon"><q-icon name="receipt_long" size="20px" /></div>
+            <div class="panel__titles">
+              <div class="panel__title">
+                Cheltuieli
+                <span v-if="data.spendings.length" class="panel__count">{{ data.spendings?.length }}</span>
+              </div>
+              <div class="panel__subtitle">{{ totalsLabel(data.spendings) || 'Nicio cheltuiala adaugata' }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div
+            class="entry"
+            v-for="({value,focus, name, currency}, index) in data.spendings">
+            <div class="entry__top">
+              <button class="entry__name"
+                      type="button"
+                      @click="openModal(index, name, 'spendings', currency)">
+                <span class="entry__index">{{ index + 1 }}</span>
+                <span class="ellipsis">{{ name.length ? name : `Cheltuiala #${index + 1}` }}</span>
+                <q-icon name="tune" size="18px" class="entry__edit" />
+              </button>
+              <q-input
+                class="input-events-spendings entry__input"
+                dense
+                outlined
+                placeholder="0"
                 @blur="blurFunc(index, 'spendings')"
                 @focus="focusButtonFunc(index, 'spendings')"
-                :outlined="focus"
+                :class="{ 'entry__input--focus': focus }"
                 :suffix="currency"
-                :filled="!focus"
                 type="number"
                 pattern="\d*"
                 @wheel="stopScroll($event)"
                 @update:model-value="newValue => handleInput(index, newValue, 'spendings')"
                 :model-value="value"/>
             </div>
-
           </div>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
-    <q-expansion-item
-      v-model="membersExpansion">
-      <template v-slot:header>
-        <q-item-section>
-          <div>
-            <h6 style="margin: 0;position: relative;display: inline">
-              Membrii
-            </h6>
-          </div>
-        </q-item-section>
-      </template>
-      <q-list dense>
-        <q-item
-          tag="label"
-          v-ripple
-          v-for="{id, label} in membersList"
-          :key="id">
-          <q-item-section avatar>
-            <q-checkbox
-              :model-value="members[id]"
-              @update:model-value="(val) => handleMembersCheckbox(id, val)"
-              left-label
-              color="primary"
-            />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ label }}</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-expansion-item>
-    <div style="padding: 0 16px;margin-top: 20px;display: flex;align-items: center;gap: 10px">
-      <q-btn
-        style="width: 100%;"
-        color="info"
-        no-caps
-        dense
-        :disabled="noEvents()"
-        @click="calculate()">Calculeaza</q-btn>
-      <q-btn v-if="calculHasMade"
-             round
-             @click="confirmReset = true"
-             dense
-             color="brown-4"
-             icon="restart_alt"
-      />
-      <q-btn v-if="calculHasMade"
-             round
-             @click="confirmDownload = true"
-             dense
-             color="violet"
-             icon="download"
-      />
-    </div>
-    <span v-if="forceRender" style="display:none" aria-hidden="true"></span>
-    <div
-      v-if="getResultsCalcul"
-      style="margin-top: 20px;padding: 0 16px;">
-      <q-table
-        v-if="false"
-        class="download-table"
-        flat
-        hide-bottom
-        bordered
-        :rows="downloadRows"
-        :columns="downloadColumns"
-        :pagination="{ rowsPerPage: 0 }"
-        row-key="name"
-        separator="cell">
-        <template v-slot:body="props">
-          <q-tr :style="!props.row.status && !props.row.isEvent && !props.row.isSpendings && 'background-color: lightgray;'" :props="props">
-            <q-td key="name"
-                  style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;"
-                  :props="props">
-              <span>
-                {{ props.row.name }}
-              </span>
-            </q-td>
-            <q-td key="euro" :props="props">
-              {{ props.row.euro ? `${props.row.euro} €` : ''  }}
-            </q-td>
-            <q-td key="lei" :props="props">
-              {{ props.row.lei ? `${props.row.lei} lei` : '' }}
-            </q-td>
-            <q-td key="avans" :props="props">
-              {{  props.row.isEvent
-              ? props.row.avans ? `${props.row.avans} €` : ''
-              : props.row.totalAvans ? `${props.row.totalAvans} €` : '' }}
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
-      <q-table
-        flat
-        hide-header
-        hide-bottom
-        bordered
-        :rows="tableRows"
-        :columns="columns"
-        :pagination="{ rowsPerPage: 0 }"
-        row-key="name"
-        separator="cell">
-        <template v-slot:body="props">
-          <q-tr :style="!props.row.status && 'background-color: lightgray;'" :props="props">
-            <q-td key="name"
-                  style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;"
-                  :props="props">
-              <span>
-                {{ props.row.name }}
-              </span>
-              <div v-if="props.row.totalAvansEuro || props.row.totalAvansLei"
-                   style="color: grey;font-size: 10px;display: flex;align-items: center;gap: 3px">
-                <q-icon size="18px"
-                        color="green"
-                        name="info"/>
-                <span v-if="props.row.totalAvansEuro">{{ `${props.row.totalAvansEuro} €` }}</span>
-                <span v-if="props.row.totalAvansEuro && props.row.totalAvansLei"> + </span>
-                <span v-if="props.row.totalAvansLei">{{ `${props.row.totalAvansLei} lei` }}</span>
-              </div>
-            </q-td>
-            <q-td key="euro" :props="props">
-              {{ `${props.row.euro} €`  }}
-            </q-td>
-            <q-td key="lei" :props="props">
-              {{ `${props.row.lei} lei` }}
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+          <q-btn
+            class="add-btn"
+            no-caps
+            unelevated
+            @click="handleAdd('spendings')"
+            label="Adauga cheltuiala" icon="add" />
+        </div>
+      </section>
 
-      <div v-if="spendingsSnapshot.length" style="margin-top: 12px;">
-        <span style="font-size: 11px;color: grey;font-weight: 500;text-transform: uppercase;letter-spacing: 0.5px;">Cheltuieli</span>
-        <div style="margin-top: 4px;">
-          <div style="border-top: 1px solid #e0e0e0;" />
-          <div
-            v-for="(sp, index) in spendingsSnapshot"
-            :key="index">
-            <div v-if="sp.value"
-                 style="display: flex;align-items: center;gap: 10px;padding: 6px 4px;">
-              <span style="font-size: 13px;color: #888;">{{ sp.name || `#${index + 1}` }}</span>
-              <span> - </span>
-              <span style="font-size: 13px;font-weight: 400;">{{ `${sp.value} ${sp.currency}` }}</span>
+      <!-- Membrii -->
+      <section class="panel panel--members">
+        <button type="button"
+                class="panel__header panel__header--toggle"
+                :aria-expanded="membersExpansion"
+                @click="membersExpansion = !membersExpansion">
+          <div class="panel__head">
+            <div class="panel__icon"><q-icon name="groups" size="20px" /></div>
+            <div class="panel__titles">
+              <div class="panel__title">Membrii</div>
+              <div class="panel__subtitle">{{ activeMembersCount }} din {{ membersList.length }} participa</div>
             </div>
-            <div style="border-top: 1px solid #e0e0e0;" />
+          </div>
+        </button>
+        <div class="collapse" :class="{ 'collapse--open': membersExpansion }" :inert="!membersExpansion">
+          <div class="collapse__inner">
+            <div class="panel__body">
+              <div class="chip-group">
+                <q-chip
+                  v-for="{id, label} in membersList"
+                  :key="id"
+                  clickable
+                  :icon="members[id] ? 'check' : 'person_off'"
+                  :color="members[id] ? 'primary' : 'grey-3'"
+                  :text-color="members[id] ? 'white' : 'grey-7'"
+                  :class="{ 'chip--off': !members[id] }"
+                  @click="handleMembersCheckbox(id, !members[id])">
+                  {{ label }}
+                </q-chip>
+              </div>
+              <div class="panel__hint">Atinge un membru ca sa il excluzi din impartire.</div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <q-expansion-item
-        v-if="false"
-        style="margin-top: 10px;"
-        dense
-        label="Detaliat">
-        <q-card>
-          <q-card-section>
-            <div class="flex" style="gap: 10px;align-items: center" >
-              <div class="cont">
-                <label class="label">Total suma evenimente</label>
-                <span>{{ totalSum.totalSumaEvenimenteEuro }} euro</span>
-              </div>
-              -
-              <div class="cont">
-                <label class="label">Total suma cheltuieli</label>
-                <span :style="totalSum.totalSumaCheltuieliEuroSchimbat > 1 && 'text-decoration: line-through;'">{{ totalSum.totalSumaCheltuieliEuro }} euro</span>
-              </div>
-              <span v-if="totalSum.totalSumaCheltuieliLeiSchimbat > 1">-</span>
-              <div
-                v-if="totalSum.totalSumaCheltuieliLeiSchimbat > 1"
-                class="cont">
-                <label class="label">Total suma cheltuieli lei schimbat</label>
-                <span>{{ totalSum.totalSumaCheltuieliLeiSchimbat }} euro</span>
-              </div>
-              =
-              <div class="cont">
-                <label class="label">Total suma ramasa</label>
-                <span>{{ totalSum.totalSumaRamasaDupaCheltuieliEuro }} euro</span>
-              </div>
+      <span v-if="forceRender" style="display:none" aria-hidden="true"></span>
+
+      <!-- Rezultate -->
+      <section v-if="getResultsCalcul" class="results">
+        <q-table
+          class="results-table"
+          flat
+          hide-header
+          hide-bottom
+          :rows="tableRows"
+          :columns="columns"
+          :pagination="{ rowsPerPage: 0 }"
+          row-key="name">
+          <template v-slot:body="props">
+            <q-tr :class="{ 'row--inactive': !props.row.status }" :props="props">
+              <q-td key="name" class="results-table__name" :props="props">
+                <span class="member-avatar" :data-initial="props.row.name[0]" aria-hidden="true"></span>
+                <div class="member-info">
+                  <span class="member-name">
+                    {{ props.row.name }}
+                  </span>
+                  <div v-if="props.row.totalAvansEuro || props.row.totalAvansLei"
+                       class="member-avans">
+                    <q-icon size="14px"
+                            color="positive"
+                            name="payments"/>
+                    <span v-if="props.row.totalAvansEuro">{{ `${props.row.totalAvansEuro} €` }}</span>
+                    <span v-if="props.row.totalAvansEuro && props.row.totalAvansLei"> + </span>
+                    <span v-if="props.row.totalAvansLei">{{ `${props.row.totalAvansLei} lei` }}</span>
+                  </div>
+                </div>
+              </q-td>
+              <q-td key="euro" class="results-table__amount" :props="props">
+                {{ `${props.row.euro} €`  }}
+              </q-td>
+              <q-td key="lei" class="results-table__amount" :props="props">
+                {{ `${props.row.lei} lei` }}
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+
+        <div v-if="spendingsSnapshot.some(sp => sp.value)" class="results__spendings">
+          <div class="results__section-label">Cheltuieli scazute</div>
+          <template v-for="(sp, index) in spendingsSnapshot" :key="index">
+            <div v-if="sp.value" class="spending-line">
+              <span class="spending-line__name">{{ sp.name || `#${index + 1}` }}</span>
+              <span class="spending-line__value">-{{ `${sp.value} ${sp.currency}` }}</span>
             </div>
-            <div class="flex" style="gap: 10px;align-items: center;margin-top: 20px">
-              <div class="cont">
-                <label class="label">Total suma evenimente lei</label>
-                <span>{{ totalSum.totalSumaEvenimenteLei }} lei</span>
-              </div>
-              -
-              <div class="cont">
-                <label class="label">Total suma cheltuieli lei</label>
-                <span :style="totalSum.totalSumaCheltuieliLeiSchimbat > 1 && 'text-decoration: line-through;'">{{ totalSum.totalSumaCheltuieliLei }} lei</span>
-              </div>
-              <span v-if="totalSum.totalSumaCheltuieliEuroSchimbat > 1">-</span>
-              <div class="cont"
-                   v-if="totalSum.totalSumaCheltuieliEuroSchimbat > 1">
-                <label class="label">Total suma cheltuieli euro schimbat</label>
-                <span>{{ totalSum.totalSumaCheltuieliEuroSchimbat }} lei</span>
-              </div>
-              =
-              <div class="cont">
-                <label class="label">Total suma ramasa lei</label>
-                <span>{{ totalSum.totalSumaRamasaDupaCheltuieliLei }} lei</span>
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
+          </template>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bara de actiuni -->
+    <div class="action-bar">
+      <div class="action-bar__inner">
+        <q-btn v-if="calculHasMade"
+               round
+               flat
+               class="action-bar__icon"
+               @click="confirmReset = true"
+               icon="restart_alt">
+          <q-tooltip>Reseteaza</q-tooltip>
+        </q-btn>
+        <q-btn
+          class="action-bar__main"
+          color="primary"
+          unelevated
+          no-caps
+          icon="calculate"
+          :disabled="noEvents()"
+          @click="calculate()">Calculeaza</q-btn>
+        <q-btn v-if="calculHasMade"
+               round
+               flat
+               class="action-bar__icon"
+               @click="confirmDownload = true"
+               icon="download">
+          <q-tooltip>Descarca CSV</q-tooltip>
+        </q-btn>
+      </div>
     </div>
   </q-page>
 </template>
@@ -598,8 +490,6 @@ const $q = useQuasar()
 const store = useStore()
 const cursEuro = computed(() => store.state.moduleExample.cursEuro)
 
-const eventsExpansion = ref(true)
-const spendingsExpansion = ref(true)
 const membersExpansion = ref(false)
 
 const confirmDeleteEvent = ref(false)
@@ -632,8 +522,6 @@ onMounted(() => {
           members.value[id] = scenario.members[id]
         })
       }
-      eventsExpansion.value = true
-      spendingsExpansion.value = true
       calculate()
     }
     window.__recalculateWithCursEuro = (newCursEuro) => {
@@ -777,6 +665,31 @@ const totalSum = ref({
   totalSumaCheltuieliEuroSchimbat: 0,
 })
 
+const currencyToggleOptions = computed(() => optionsValuta.value.map(v => ({ label: v, value: v })))
+const activeMembersCount = computed(() => Object.values(members.value).filter(Boolean).length)
+
+function formatNumber (value) {
+  return (Number(value) || 0).toLocaleString('ro-RO', { maximumFractionDigits: 2 })
+}
+
+function totalsLabel (list, isEvents = false) {
+  const totals = { '€': 0, lei: 0 }
+  list.forEach(obj => {
+    const key = obj.currency === 'lei' ? 'lei' : '€'
+    totals[key] += (isEvents && obj.companyEvent ? obj.priceWithCompanySpendings : obj.value * 1) || 0
+  })
+  return Object.keys(totals)
+    .filter(key => totals[key])
+    .map(key => `${formatNumber(totals[key])} ${key}`)
+    .join(' · ')
+}
+
+function toggleAvansMember (membru) {
+  modelMultiple.value = modelMultiple.value.includes(membru)
+    ? modelMultiple.value.filter(m => m !== membru)
+    : [...modelMultiple.value, membru]
+}
+
 const calculHasMade = ref(false)
 const tableRows = ref(rows.map(r => ({...r})))
 const spendingsSnapshot = ref([])
@@ -855,13 +768,9 @@ function resetAll () {
 
   valuta.value = ''
   spendingsSnapshot.value = []
-  eventsExpansion.value = false
-  spendingsExpansion.value = false
 }
 function calculate () {
   calculHasMade.value = true
-  eventsExpansion.value = false
-  spendingsExpansion.value = false
   membersExpansion.value = false
 
   let totalPriceEventsEuro
@@ -1215,20 +1124,440 @@ function handleDelete (index, section) {
 </script>
 
 <style lang="scss">
-.currency-select {
-  .q-field__native {
-    justify-content: center;
-  }
+$ink: #1f2d33;
+$muted: #6b7c85;
+$line: #e4ebef;
+$radius: 16px;
+
+.calc-page {
+  min-height: unset !important;
+  padding-bottom: 110px;
 }
-.label {
-  font-size: 10px;
-}
-.cont {
+
+.calc-content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 16px 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  gap: 12px;
 }
+
+/* ---------- Panels ---------- */
+.panel {
+  background: #fff;
+  border-radius: $radius;
+  box-shadow: 0 1px 2px rgba(20, 50, 60, .06), 0 4px 16px rgba(20, 50, 60, .05);
+  overflow: hidden;
+
+  --accent: #{$primary};
+  --accent-soft: #e6f1f4;
+
+  &--events { --accent: #3a9a5b; --accent-soft: #e5f4ea; }
+  &--spendings { --accent: #d1543f; --accent-soft: #fbe9e5; }
+  &--members { --accent: #{$primary}; --accent-soft: #e6f1f4; }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 14px 16px;
+    min-height: 64px;
+  }
+  &__header--toggle {
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  &__titles { min-width: 0; }
+  &__title {
+    font-size: 17px;
+    font-weight: 600;
+    color: $ink;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.2;
+  }
+  &__count {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 11px;
+    display: inline-grid;
+    place-items: center;
+    color: #fff;
+    background: var(--accent);
+  }
+  &__subtitle {
+    font-size: 13px;
+    color: $muted;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &__body {
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  &__hint {
+    font-size: 12px;
+    color: $muted;
+  }
+}
+
+/* ---------- Entries (evenimente / cheltuieli) ---------- */
+.entry {
+  border: 1px solid $line;
+  border-radius: 12px;
+  padding: 10px 10px 10px 12px;
+  background: #fbfcfd;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  &__name {
+    all: unset;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: $ink;
+    padding: 6px 0;
+
+    &:focus-visible { outline: 2px solid $primary; border-radius: 6px; }
+  }
+  &__index {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 600;
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  &__edit {
+    flex-shrink: 0;
+    color: #9aabb3;
+  }
+  &__input {
+    width: 130px;
+    flex-shrink: 0;
+
+    .q-field__control { border-radius: 10px; background: #fff; }
+    .q-field__suffix { color: $muted; font-weight: 500; }
+    .q-field__native { font-weight: 600; font-size: 15px; }
+  }
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  line-height: 1.3;
+
+  &--orange { background: #fff1e0; color: #a55a00; }
+  &--green { background: #e5f4ea; color: #2c7a47; }
+}
+
+.add-btn {
+  border: 1.5px dashed #c9d6dc;
+  border-radius: 12px;
+  color: var(--accent);
+  background: transparent;
+  padding: 6px;
+  font-weight: 500;
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+
+  .q-chip { font-weight: 500; margin: 0; }
+  .q-chip .q-focus-helper { display: none; }
+  .q-chip.q-chip--clickable:focus, .q-chip.q-chip--clickable:hover { box-shadow: none; }
+  .chip--off {
+    background: #fff !important;
+    border: 1px dashed #c3ced3;
+
+  }
+}
+
+/* ---------- Results ---------- */
+.results {
+  background: #fff;
+  border-radius: $radius;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(20, 50, 60, .06), 0 4px 16px rgba(20, 50, 60, .05);
+
+  &__spendings {
+    padding: 4px 16px 12px;
+    border-top: 1px solid $line;
+  }
+  &__section-label {
+    font-size: 11px;
+    color: $muted;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 10px 0 4px;
+  }
+}
+
+.results-table {
+  .q-table { border-collapse: collapse; }
+  tbody tr td { border-bottom: 1px solid $line; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover > td { background: transparent; }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: auto !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+  &__amount {
+    font-size: 15px;
+    font-weight: 600;
+    color: $ink;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .row--inactive {
+    td { background: #f3f5f6; color: #a3b0b6; }
+    .results-table__amount { color: #a3b0b6; }
+    .member-avatar { background: #dfe5e8; color: #a3b0b6; }
+    .member-name { text-decoration: line-through; color: #a3b0b6; }
+  }
+}
+
+.member-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: #e6f1f4;
+  color: #46808f;
+  font-weight: 700;
+  font-size: 14px;
+
+  &::before { content: attr(data-initial); }
+}
+.member-info { min-width: 0; }
+.member-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: $ink;
+}
+.member-avans {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: #2c7a47;
+  margin-top: 1px;
+}
+
+.spending-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  font-size: 14px;
+  border-bottom: 1px dashed $line;
+
+  &:last-child { border-bottom: 0; }
+  &__name { color: $muted; }
+  &__value { color: #c0442f; font-weight: 500; white-space: nowrap; }
+}
+
+/* ---------- Action bar ---------- */
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid $line;
+
+  &__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  &__main {
+    flex: 1;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  &__icon {
+    width: 48px;
+    height: 48px;
+    color: $ink;
+    background: #eef3f5;
+  }
+}
+
+/* ---------- Dialogs ---------- */
+.dlg {
+  border-radius: 20px !important;
+
+  &--confirm { width: 340px; max-width: 92vw; }
+  &--sheet {
+    width: 100%;
+    max-width: 560px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+  &__confirm-body {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 15px;
+    color: $ink;
+  }
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px 16px 4px 20px;
+  }
+  &__eyebrow {
+    font-size: 12px;
+    color: $muted;
+    text-transform: capitalize;
+  }
+  &__title {
+    font-size: 19px;
+    font-weight: 600;
+    color: $ink;
+  }
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 12px 20px;
+  }
+  &__actions {
+    padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  &__save {
+    min-width: 130px;
+    border-radius: 12px;
+    height: 42px;
+    font-weight: 600;
+  }
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  &__label { font-size: 13px; color: $muted; font-weight: 500; }
+}
+
+.currency-toggle {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid $line;
+
+  .q-btn { min-width: 52px; font-weight: 600; }
+}
+
+.option-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid $line;
+  border-radius: 12px;
+  transition: background .2s, border-color .2s;
+
+  &--on { background: #f7faf8; border-color: #cfe3d6; }
+  &__text { cursor: pointer; flex: 1; }
+  &__title { font-weight: 500; color: $ink; }
+  &__hint { font-size: 12px; color: $muted; }
+}
+
+/* Collapse animat din CSS (fara intarzierea de 100ms a QSlideTransition) */
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .3s cubic-bezier(.25, .8, .5, 1);
+
+  &--open { grid-template-rows: 1fr; }
+  &__inner { min-height: 0; overflow: hidden; }
+  &__inner > .avans-box { margin-top: 10px; }
+}
+
+.avans-box {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f3f9f5;
+
+  &__row { display: flex; gap: 10px; align-items: center; }
+}
+
 .input-events-spendings {
   .q-field__native {
     text-align: right;
