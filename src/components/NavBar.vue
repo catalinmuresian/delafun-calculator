@@ -28,15 +28,45 @@
     </q-dialog>
 
     <header class="nav-bar__inner">
-      <img
-        class="nav-bar__logo"
-        src="../assets/delafun__1_-removebg-preview.png"
-        alt="logo-delafun">
-      <button class="nav-bar__rate" type="button" @click="openSettings">
-        <q-icon name="currency_exchange" size="16px" />
-        <span>1 € = <b>{{ cursEuro }}</b> lei</span>
-        <q-icon name="settings" size="16px" class="nav-bar__rate-gear" />
-      </button>
+      <router-link to="/" class="nav-bar__home" aria-label="Calculator">
+        <img
+          class="nav-bar__logo"
+          src="../assets/delafun__1_-removebg-preview.png"
+          alt="logo-delafun">
+      </router-link>
+      <q-btn v-if="!locked"
+             round
+             flat
+             dense
+             icon="settings"
+             class="nav-bar__settings"
+             aria-label="Setari">
+        <q-menu anchor="bottom right" self="top right" :offset="[0, 8]" class="nav-menu">
+          <q-list style="min-width: 210px">
+            <q-item clickable v-close-popup @click="openSettings">
+              <q-item-section avatar><q-icon name="currency_exchange" /></q-item-section>
+              <q-item-section>
+                <q-item-label>Curs valutar</q-item-label>
+                <q-item-label caption>1 € = {{ cursEuro }} lei</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup :to="{ name: 'calendar' }">
+              <q-item-section avatar><q-icon name="calendar_month" /></q-item-section>
+              <q-item-section>
+                <q-item-label>Calendar</q-item-label>
+                <q-item-label caption>Calcule salvate</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup :to="{ name: 'report' }">
+              <q-item-section avatar><q-icon name="table_chart" /></q-item-section>
+              <q-item-section>
+                <q-item-label>Raport</q-item-label>
+                <q-item-label caption>Sume pe membru, Excel / CSV</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
     </header>
   </div>
 </template>
@@ -45,6 +75,8 @@
 import { date } from 'quasar'
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
+
+defineProps({ locked: Boolean })
 
 const store = useStore()
 const modalInfo = ref(false)
@@ -77,23 +109,19 @@ function saveCursEuro () {
     align-items: center;
     padding: calc(6px + env(safe-area-inset-top)) 16px 6px;
   }
+  &__home { display: block; }
   &__logo { max-width: 96px; display: block; }
-  &__rate {
-    all: unset;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    color: #1f2d33;
+  &__settings {
+    color: $ink;
     background: rgba(255, 255, 255, .75);
     box-shadow: 0 1px 3px rgba(20, 50, 60, .12);
-
-    &:focus-visible { outline: 2px solid #fff; }
   }
-  &__rate-gear { color: #6b7c85; }
+}
+
+.nav-menu {
+  border-radius: 14px !important;
+  .q-item { min-height: 52px; }
+  .q-item__section--avatar { min-width: 40px; color: $primary; }
 }
 
 .rate-dialog {

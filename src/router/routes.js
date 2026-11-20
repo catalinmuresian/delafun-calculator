@@ -3,7 +3,10 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', name: 'calculator', component: () => import('pages/IndexPage.vue') },
+      { path: 'calendar', name: 'calendar', component: () => import('pages/CalendarPage.vue') },
+      { path: 'calcul/:id', name: 'calculation', component: () => import('pages/CalculationPage.vue') },
+      { path: 'raport', name: 'report', component: () => import('pages/ReportPage.vue') }
     ]
   },
 

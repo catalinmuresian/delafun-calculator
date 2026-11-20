@@ -46,3 +46,37 @@ jobs:
           target: "/var/www/delafun-calculator/public_html/"
           strip_components: 2
           rm: true
+
+      # The app's own Cockpit endpoints (/cockpit/api/calc/*: me, pair, calculations, calculation, delete).
+      - name: Deploy Cockpit endpoints to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "cockpit/api/calc/*"
+          target: "/var/www/delafun-calculator/cockpit/config/api/calc/"
+          strip_components: 3
+          rm: true
+
+      - name: Deploy Cockpit provisioning and pairing scripts to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "deploy/cockpit-provision.php,deploy/calc-pair.php"
+          target: "/var/www/delafun-calculator/"
+          strip_components: 0
+
+      - name: Update Cockpit models
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            chown -R www-data:www-data /var/www/delafun-calculator/cockpit/config/api
+            cd /tmp
+            # Models + the public API key (idempotent). Runs as www-data, which owns Cockpit's files.
+            sudo -u www-data php /var/www/delafun-calculator/deploy/cockpit-provision.php /var/www/delafun-calculator/cockpit

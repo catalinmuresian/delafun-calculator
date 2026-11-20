@@ -85,7 +85,15 @@ module.exports = configure(function (ctx) {
         type: 'http'
       },
       port: 8080,
-      open: true // opens browser window automatically
+      open: true, // opens browser window automatically
+      // The saved calculations live in Cockpit on the VPS; the dev server forwards to it.
+      proxy: {
+        '/cockpit/api': {
+          target: 'https://calc.cmdev.ro',
+          changeOrigin: true,
+          secure: true
+        }
+      }
     },
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-framework
@@ -103,7 +111,7 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: ['Notify']
     },
 
     // animations: 'all', // --- includes all animations
