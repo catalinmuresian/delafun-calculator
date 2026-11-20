@@ -9,6 +9,12 @@
 // The API key the app sends is public on purpose: its role has no permissions, so it only lets the
 // request reach these endpoints, which check the device themselves.
 
+// Cockpit would also run this file as the route /api/calc/_lib: it is not an endpoint.
+if (isset($API_FILE) && realpath($API_FILE) === __FILE__) {
+    $this->response->status = 404;
+    return ['error' => 'not_found'];
+}
+
 const CALC_COOKIE = 'calc_device';
 const CALC_COOKIE_PATH = '/cockpit/api/calc';
 // Browsers keep a cookie at most 400 days; it is renewed on every request, so a used phone never expires.

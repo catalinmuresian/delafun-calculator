@@ -65,7 +65,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: "deploy/cockpit-provision.php,deploy/calc-pair.php"
+          source: "deploy/cockpit-provision.php,deploy/calc-pair.php,deploy/cockpit-config.php"
           target: "/var/www/delafun-calculator/"
           strip_components: 0
 
@@ -76,6 +76,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            install -o www-data -g www-data -m 644 /var/www/delafun-calculator/deploy/cockpit-config.php /var/www/delafun-calculator/cockpit/config/config.php
             chown -R www-data:www-data /var/www/delafun-calculator/cockpit/config/api
             cd /tmp
             # Models + the public API key (idempotent). Runs as www-data, which owns Cockpit's files.
