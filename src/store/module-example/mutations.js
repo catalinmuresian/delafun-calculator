@@ -16,3 +16,7 @@ export function SET_CURS_BNR (state, { rate, date }) {
   state.cursEuro = Math.floor(rate * 100 + 1e-9) / 100
   state.cursSource = 'bnr'
 }
+
+export function SET_CURS_UPDATED_AT (state, value) {
+  state.cursUpdatedAt = value
+}

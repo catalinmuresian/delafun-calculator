@@ -5,6 +5,8 @@ export default function () {
     cursSource: 'default',
     // The BNR rate as published and its date, shown in Curs valutar.
     bnrRate: null,
-    bnrDate: null
+    bnrDate: null,
+    // When the app last got the rate from BNR (timestamp, ms).
+    cursUpdatedAt: null
   }
 }
