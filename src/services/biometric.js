@@ -25,6 +25,24 @@ export async function biometricAvailable () {
   }
 }
 
+// iPhone / iPad: Safari starts Face ID only straight from a tap, so nothing may be awaited in between.
+export const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+
+// The server's one-time challenge, asked before the tap so the tap can start Face ID at once.
+// Valid 2 minutes on the server; taken again after 90 seconds.
+let prepared = null
+export async function prepareBiometric () {
+  const data = await getChallenge()
+  prepared = { ...data, at: Date.now() }
+  return prepared
+}
+async function takeChallenge () {
+  const p = prepared && Date.now() - prepared.at < 90000 ? prepared : await prepareBiometric()
+  prepared = null // one use
+  return p
+}
+
 function mapError (e) {
   if (e instanceof BiometricError) return e
   if (e?.name === 'NotAllowedError' || e?.name === 'AbortError') return new BiometricError('cancelled')
@@ -35,8 +53,8 @@ function mapError (e) {
 // Right after pairing: makes this phone's credential (asks Face ID / fingerprint once).
 export async function registerBiometric () {
   try {
-    if (!(await biometricAvailable())) throw new BiometricError('unsupported')
-    const { challenge, userId } = await getChallenge()
+    if (!window.PublicKeyCredential) throw new BiometricError('unsupported')
+    const { challenge, userId } = await takeChallenge()
     const cred = await navigator.credentials.create({
       publicKey: {
         rp: { id: window.location.hostname, name: 'delaFun calculator' },
@@ -79,7 +97,7 @@ async function assertion (challenge, credentialId) {
 // On open / after 5 minutes away: Face ID / fingerprint, checked by the server.
 export async function unlockBiometric () {
   try {
-    const { challenge, credentialId } = await getChallenge()
+    const { challenge, credentialId } = await takeChallenge()
     if (!credentialId) throw new BiometricError('failed')
     const a = await assertion(fromB64u(challenge), credentialId)
     await unlockWithCredential({

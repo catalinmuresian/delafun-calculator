@@ -28,9 +28,15 @@
           </div>
         </div>
 
-        <div class="report-events">
-          <span class="report-events__label">Evenimente</span>
-          <span class="report-events__value">{{ eur(eventsTotal) }}</span>
+        <div class="report-totals">
+          <div class="report-events">
+            <span class="report-events__label">Evenimente <span class="report-events__count">{{ eventsCount }}</span></span>
+            <span class="report-events__value">{{ eur(eventsTotal) }}</span>
+          </div>
+          <div class="report-events report-events--spendings">
+            <span class="report-events__label">Cheltuieli <span class="report-events__count">{{ spendingsCount }}</span></span>
+            <span class="report-events__value">{{ eur(spendingsTotal) }}</span>
+          </div>
         </div>
       </section>
 
@@ -164,7 +170,8 @@ async function load () {
 }
 watch(period, load, { immediate: true })
 
-const round2 = n => Math.round((Number(n) || 0) * 100) / 100
+// Whole euros everywhere in the report; totals add up the shown (rounded) amounts.
+const round0 = n => Math.round(Number(n) || 0)
 
 // Lei to euro at the rate set in the app: the whole report is in euro.
 function toEur (value, currency) {
@@ -174,54 +181,52 @@ function toEur (value, currency) {
 }
 
 // What the events of the period brought in, in euro (after the company's cut): one total, not per member.
-const eventsTotal = computed(() => round2(calculations.value.reduce((sum, calc) =>
+const eventsTotal = computed(() => round0(calculations.value.reduce((sum, calc) =>
   sum + (calc.events || []).reduce((a, e) =>
     a + toEur(e.companyEvent ? e.priceWithCompanySpendings : e.value, e.currency), 0), 0)))
+
+const eventsCount = computed(() => calculations.value.reduce((n, calc) => n + (calc.events || []).length, 0))
+
+// What was spent in the period, in euro: also one total, not per member.
+const spendingsTotal = computed(() => round0(calculations.value.reduce((sum, calc) =>
+  sum + (calc.spendings || []).reduce((a, sp) => a + toEur(sp.value, sp.currency), 0), 0)))
+const spendingsCount = computed(() => calculations.value.reduce((n, calc) => n + (calc.spendings || []).length, 0))
 
 // One row per member, over every calculation of the period they took part in.
 const reportRows = computed(() => {
   const byMember = new Map()
   calculations.value.forEach(calc => {
     const members = calc.members || []
-    const active = members.filter(m => m.status)
-    const spendingsEur = (calc.spendings || []).reduce((a, sp) => a + toEur(sp.value, sp.currency), 0)
-
     members.forEach(m => {
       const key = m.id || m.name
       if (!byMember.has(key)) {
-        byMember.set(key, { key, name: m.name, spendingsEur: 0, avansEur: 0, totalEur: 0 })
+        byMember.set(key, { key, name: m.name, avansEur: 0, totalEur: 0 })
       }
       if (!m.status) return
       const row = byMember.get(key)
-      if (active.length) row.spendingsEur += spendingsEur / active.length
+      // Each calculation in whole euros, then added up: the same numbers as one member's export.
       const avans = toEur(m.avansEuro, '€') + toEur(m.avansLei, 'lei')
-      row.avansEur += avans
+      row.avansEur += round0(avans)
       // Incasat: what they got at the split plus the advance they already had.
-      row.totalEur += toEur(m.euro, '€') + toEur(m.lei, 'lei') + avans
+      row.totalEur += round0(toEur(m.euro, '€') + toEur(m.lei, 'lei') + avans)
     })
   })
 
-  return [...byMember.values()].map(r => ({
-    ...r,
-    spendingsEur: round2(r.spendingsEur),
-    avansEur: round2(r.avansEur),
-    totalEur: round2(r.totalEur)
-  }))
+  return [...byMember.values()]
 })
 
 const totals = computed(() => {
   const t = {}
   columns.value.slice(1).forEach(col => {
-    t[col.field] = round2(reportRows.value.reduce((a, r) => a + (Number(r[col.field]) || 0), 0))
+    t[col.field] = round0(reportRows.value.reduce((a, r) => a + (Number(r[col.field]) || 0), 0))
   })
   return t
 })
 
-const num = v => (Number(v) || 0).toLocaleString('ro-RO', { maximumFractionDigits: 2 })
+const num = v => (Number(v) || 0).toLocaleString('ro-RO', { maximumFractionDigits: 0 })
 const eur = v => `${num(v)} €`
 const columns = computed(() => [
   { name: 'name', field: 'name', label: 'Membru', align: 'left', required: true, classes: 'report-table__name', headerClasses: 'report-table__name' },
-  { name: 'spendingsEur', field: 'spendingsEur', label: 'Cheltuieli', align: 'right', format: eur },
   { name: 'avansEur', field: 'avansEur', label: 'Avans', align: 'right', format: eur },
   { name: 'totalEur', field: 'totalEur', label: 'Incasat', align: 'right', format: eur, classes: 'report-table__grand', headerClasses: 'report-table__grand' }
 ])
@@ -253,31 +258,31 @@ function sheetFor (keys) {
   // One member: each calculation they took part in, then their total.
   if (keys.length === 1) {
     const key = keys[0]
-    const header = ['Data', 'Calcul', 'Cheltuieli', 'Avans', 'Incasat']
+    const header = ['Data', 'Calcul', 'Avans', 'Incasat']
     const body = []
-    const raw = [0, 0, 0] // unrounded sums, so the total matches the table
     calculations.value.forEach(calc => {
       const members = calc.members || []
       const m = members.find(x => (x.id || x.name) === key)
       if (!m || !m.status) return
-      const active = members.filter(x => x.status).length
-      const spendings = (calc.spendings || []).reduce((a, sp) => a + toEur(sp.value, sp.currency), 0)
       const avans = toEur(m.avansEuro, '€') + toEur(m.avansLei, 'lei')
-      const share = active ? spendings / active : 0
       const got = toEur(m.euro, '€') + toEur(m.lei, 'lei') + avans
-      raw[0] += share; raw[1] += avans; raw[2] += got
-      body.push([fmtDate(calc.date), calc.title || 'Calcul fara titlu', round2(share), round2(avans), round2(got)])
+      body.push([fmtDate(calc.date), calc.title || 'Calcul fara titlu', round0(avans), round0(got)])
     })
     const name = reportRows.value.find(r => r.key === key)?.name || key
-    return { name, header, body, total: ['Total', null, ...raw.map(round2)], firstMoney: 2 }
+    const sum = i => body.reduce((a, r) => a + r[i], 0)
+    return { name, header, body, total: ['Total', null, sum(2), sum(3)], firstMoney: 2 }
   }
 
   const cols = columns.value
   const rows = keys.length ? reportRows.value.filter(r => keys.includes(r.key)) : reportRows.value
   const header = cols.map(c => c.label)
   const body = rows.map(r => cols.map(c => r[c.field]))
-  const total = ['Total', ...cols.slice(1).map(c => round2(rows.reduce((a, r) => a + (Number(r[c.field]) || 0), 0)))]
-  const events = ['Total evenimente', eventsTotal.value, ...cols.slice(2).map(() => null)]
+  const total = ['Total', ...cols.slice(1).map(c => round0(rows.reduce((a, r) => a + (Number(r[c.field]) || 0), 0)))]
+  const pad = cols.slice(2).map(() => null)
+  const events = [
+    [`Total evenimente (${eventsCount.value})`, eventsTotal.value, ...pad],
+    [`Total cheltuieli (${spendingsCount.value})`, spendingsTotal.value, ...pad]
+  ]
   return { name: keys.length ? rows.map(r => r.name).join(', ') : '', header, body, total, events, firstMoney: 1 }
 }
 
@@ -285,7 +290,7 @@ async function runExport () {
   const keys = allSelected.value ? [] : exportKeys.value
   const sheet = sheetFor(keys)
   const base = `delaFun raport ${sheet.name ? sheet.name + ' ' : ''}${periodLabel.value}`
-  const rows = [sheet.header, ...sheet.body, sheet.total, ...(sheet.events ? [[], sheet.events] : [])]
+  const rows = [sheet.header, ...sheet.body, sheet.total, ...(sheet.events ? [[], ...sheet.events] : [])]
 
   if (exportFormat.value === 'csv') {
     const cell = v => typeof v === 'number' ? String(v) : `"${String(v ?? '').replaceAll('"', '""')}"`
@@ -300,9 +305,9 @@ async function runExport () {
   exporting.value = true
   try {
     const { default: writeExcelFile } = await import('write-excel-file/browser')
-    const money = row => row.map((v, i) => i >= sheet.firstMoney && typeof v === 'number' ? { value: v, format: '#,##0.00' } : v)
+    const money = row => row.map((v, i) => i >= sheet.firstMoney && typeof v === 'number' ? { value: v, format: '#,##0' } : v)
     const bold = row => money(row).map(c => c && typeof c === 'object' ? { ...c, fontWeight: 'bold' } : { value: c, fontWeight: 'bold' })
-    const data = [bold(sheet.header), ...sheet.body.map(money), bold(sheet.total), ...(sheet.events ? [[], bold(sheet.events)] : [])]
+    const data = [bold(sheet.header), ...sheet.body.map(money), bold(sheet.total), ...(sheet.events ? [[], ...sheet.events.map(bold)] : [])]
     await writeExcelFile(data, {
       columns: sheet.header.map((h, i) => ({ width: i === 1 && keys.length === 1 ? 30 : i === 0 ? 16 : 14 }))
     }).toFile(`${base}.xlsx`)
@@ -327,17 +332,38 @@ async function runExport () {
   &__nav { display: flex; align-items: center; gap: 4px; }
   &__label { min-width: 120px; text-align: center; font-weight: 600; color: $ink; }
 }
+// Events, and spendings under them.
+.report-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 16px 16px;
+}
 .report-events {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  margin: 0 16px 16px;
   padding: 12px 14px;
   border-radius: 12px;
   background: #e5f4ea;
 
-  &__label { font-size: 13px; font-weight: 600; color: #2c7a47; }
+  &__label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #2c7a47; }
+  &__count {
+    min-width: 22px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 12px;
+    text-align: center;
+    color: #fff;
+    background: #3a9a5b;
+  }
   &__value { font-size: 20px; font-weight: 700; color: $ink; }
+
+  &--spendings {
+    background: #fbe9e5;
+    .report-events__label { color: #a5402f; }
+    .report-events__count { background: #d1543f; }
+  }
 }
 .report-panel { overflow: hidden; }
 .export-hint { font-size: 12px; color: $muted; margin-top: 8px; }

@@ -18,8 +18,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { registerBiometric, unlockBiometric, unlockOffline } from '../services/biometric'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { isIOS, prepareBiometric, registerBiometric, unlockBiometric, unlockOffline } from '../services/biometric'
 
 // mode: 'register' (right after the code) | 'unlock' | 'unlock-offline'
 const props = defineProps({ mode: { type: String, required: true } })
@@ -50,10 +50,22 @@ async function run () {
   }
 }
 
-// Unlocking starts by itself; browsers that want a tap first get the button.
-onMounted(() => {
-  if (props.mode !== 'register') run().catch(() => {})
+// The challenge is asked as soon as the screen shows, so a tap starts Face ID / fingerprint at once.
+// Android starts the unlock by itself; on iPhone Safari wants a tap, so the button does it.
+onMounted(async () => {
+  if (props.mode === 'unlock-offline') {
+    if (!isIOS) run()
+    return
+  }
+  const prepare = () => prepareBiometric().catch(() => { /* no answer now: the tap asks again */ })
+  await prepare()
+  // Kept fresh while the screen waits (the server's challenge lasts 2 minutes).
+  refresh = setInterval(() => { if (!busy.value) prepare() }, 80000)
+  if (props.mode === 'unlock' && !isIOS) run()
 })
+
+let refresh = null
+onBeforeUnmount(() => clearInterval(refresh))
 </script>
 
 <style lang="scss">
