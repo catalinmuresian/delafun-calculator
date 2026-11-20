@@ -4,10 +4,6 @@
       <q-card class="rate-dialog">
         <q-card-section class="column items-center">
           <div class="rate-dialog__title">Curs valutar</div>
-          <div v-if="bnrRate" class="rate-dialog__bnr">
-            <q-icon name="account_balance" size="16px" />
-            <span>BNR {{ formatDate(bnrDate) }}: <b>{{ bnrRate }}</b> → folosit <b>{{ bnrUsed }}</b></span>
-          </div>
           <div v-if="manualUntil" class="rate-dialog__manual">
             Curs pus manual: {{ cursEuro }} lei, pana la {{ manualUntil }}
           </div>
@@ -103,7 +99,6 @@ const modalInfo = ref(false)
 const cursEuro = computed(() => store.state.moduleExample.cursEuro)
 const cursSource = computed(() => store.state.moduleExample.cursSource)
 const bnrRate = computed(() => store.state.moduleExample.bnrRate)
-const bnrDate = computed(() => store.state.moduleExample.bnrDate)
 const cursUpdatedAt = computed(() => store.state.moduleExample.cursUpdatedAt)
 // Set at build time, i.e. when the app was last deployed.
 const buildVersion = Number(process.env.BUILD_VERSION) || null
@@ -112,10 +107,6 @@ function formatStamp (ms) {
   return ms ? date.formatDate(ms, 'DD.MM.YYYY HH:mm') : '—'
 }
 const bnrUsed = computed(() => bnrRate.value ? Math.floor(bnrRate.value * 100 + 1e-9) / 100 : null)
-
-function formatDate (value) {
-  return value ? date.formatDate(date.extractDate(value, 'YYYY-MM-DD'), 'DD.MM.YYYY') : ''
-}
 
 // Until when a hand-typed rate wins over BNR (shown in the dialog).
 const manualUntil = ref('')
@@ -193,18 +184,6 @@ function saveCursEuro () {
 
   &__title { font-size: 17px; font-weight: 600; margin-bottom: 14px; align-self: flex-start; }
   &__save { border-radius: 12px; height: 42px; font-weight: 600; }
-  &__bnr {
-    align-self: stretch;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 12px;
-    padding: 8px 10px;
-    border-radius: 10px;
-    font-size: 13px;
-    color: #2c5f6e;
-    background: #e6f1f4;
-  }
   &__manual { align-self: stretch; font-size: 12px; color: #a55a00; margin: -4px 0 10px; }
 }
 </style>

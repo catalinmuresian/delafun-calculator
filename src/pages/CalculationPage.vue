@@ -42,7 +42,7 @@
             <div class="calc-summary__total">
               {{ formatNumber(calc.total_euro) }} € <span class="calc-summary__plus">+</span> {{ formatNumber(calc.total_lei) }} lei
             </div>
-            <div class="calc-summary__meta">Curs: 1 € = {{ calc.curs_euro }} lei</div>
+            <div v-if="calc.curs_euro" class="calc-summary__meta">Curs: 1 € = {{ calc.curs_euro }} lei</div>
           </div>
         </section>
 
@@ -83,7 +83,7 @@
               <div v-if="e.companyEvent || e.ifAvans" class="entry__tags">
                 <span v-if="e.companyEvent" class="tag tag--orange">
                   <q-icon name="business" size="14px" />
-                  -11% firma · <b>{{ formatNumber(e.priceWithCompanySpendings) }} {{ e.currency }}</b>
+                  -{{ firmPercent(e) }}% firma · <b>{{ formatNumber(e.priceWithCompanySpendings) }} {{ e.currency }}</b>
                 </span>
                 <span v-if="e.ifAvans" class="tag tag--green">
                   <q-icon name="payments" size="14px" />
@@ -170,6 +170,12 @@ async function remove () {
   } finally {
     deleting.value = false
   }
+}
+
+// The company's cut as it was (11% now, other values in older calculations).
+function firmPercent (e) {
+  const v = Number(e.value) || 0
+  return v ? Math.round((1 - (Number(e.priceWithCompanySpendings) || 0) / v) * 100) : 11
 }
 
 function formatNumber (value) {
