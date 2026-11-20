@@ -106,12 +106,9 @@ function onNavigation ({ year, month }) {
   loadMonth(currentMonth.value)
 }
 
+// The chosen day's calculations show in the list below; one opens with a tap on it.
 function onSelect (value) {
   router.replace({ query: value ? { date: value } : {} })
-  if (!value) return
-  const list = items.value.filter(i => i.date === value)
-  // One calculation that day: straight to it; more: the list below.
-  if (list.length === 1) router.push({ name: 'calculation', params: { id: list[0].id } })
 }
 
 onMounted(() => loadMonth(currentMonth.value))
