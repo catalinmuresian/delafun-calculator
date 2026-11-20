@@ -34,7 +34,7 @@
             <span class="report-events__value">{{ eur(eventsTotal) }}</span>
           </div>
           <div class="report-events report-events--spendings">
-            <span class="report-events__label">Cheltuieli <span class="report-events__count">{{ spendingsCount }}</span></span>
+            <span class="report-events__label">Cheltuieli</span>
             <span class="report-events__value">{{ eur(spendingsTotal) }}</span>
           </div>
         </div>
@@ -190,7 +190,6 @@ const eventsCount = computed(() => calculations.value.reduce((n, calc) => n + (c
 // What was spent in the period, in euro: also one total, not per member.
 const spendingsTotal = computed(() => round0(calculations.value.reduce((sum, calc) =>
   sum + (calc.spendings || []).reduce((a, sp) => a + toEur(sp.value, sp.currency), 0), 0)))
-const spendingsCount = computed(() => calculations.value.reduce((n, calc) => n + (calc.spendings || []).length, 0))
 
 // One row per member, over every calculation of the period they took part in.
 const reportRows = computed(() => {
@@ -281,7 +280,7 @@ function sheetFor (keys) {
   const pad = cols.slice(2).map(() => null)
   const events = [
     [`Total evenimente (${eventsCount.value})`, eventsTotal.value, ...pad],
-    [`Total cheltuieli (${spendingsCount.value})`, spendingsTotal.value, ...pad]
+    ['Total cheltuieli', spendingsTotal.value, ...pad]
   ]
   return { name: keys.length ? rows.map(r => r.name).join(', ') : '', header, body, total, events, firstMoney: 1 }
 }
@@ -362,7 +361,6 @@ async function runExport () {
   &--spendings {
     background: #fbe9e5;
     .report-events__label { color: #a5402f; }
-    .report-events__count { background: #d1543f; }
   }
 }
 .report-panel { overflow: hidden; }
